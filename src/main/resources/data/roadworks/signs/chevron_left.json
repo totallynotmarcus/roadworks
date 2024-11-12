@@ -1,5 +1,5 @@
 {
-  "name": "block.roadworks.chevron_left",
+  "name": "sign.roadworks.chevron_left",
   "front_texture": "roadworks:block/signs/chevron_left",
   "back_texture": "roadworks:block/signs/back_rectangle"
 }

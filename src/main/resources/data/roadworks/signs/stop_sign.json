@@ -1,5 +1,5 @@
 {
-  "name": "block.roadworks.stop_sign",
+  "name": "sign.roadworks.stop_sign",
   "front_texture": "roadworks:block/signs/stop_sign",
   "back_texture": "roadworks:block/signs/back_octagon"
 }

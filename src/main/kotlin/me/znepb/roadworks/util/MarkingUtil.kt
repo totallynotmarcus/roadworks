@@ -1,8 +1,8 @@
 package me.znepb.roadworks.util
 
-import me.znepb.roadworks.Registry
-import me.znepb.roadworks.block.marking.OneSideFilledMarking
-import me.znepb.roadworks.block.marking.OneSideFilledMarking.Companion.SHOULD_FILL
+import me.znepb.roadworks.RoadworksRegistry
+import me.znepb.roadworks.marking.OneSideFilledMarking
+import me.znepb.roadworks.marking.OneSideFilledMarking.Companion.SHOULD_FILL
 import me.znepb.roadworks.datagen.TagProvider
 import net.minecraft.block.BlockState
 import net.minecraft.state.property.Properties
@@ -11,7 +11,7 @@ import net.minecraft.util.math.Direction
 class MarkingUtil {
     companion object {
         fun doesBorder(from: BlockState, other: BlockState): Boolean {
-            if(other.isOf(Registry.ModBlocks.WHITE_INFILL_MARKING)) return true
+            if(other.isOf(RoadworksRegistry.ModBlocks.WHITE_INFILL_MARKING)) return true
             if(!from.contains(Properties.HORIZONTAL_FACING)
                 || !other.contains(Properties.HORIZONTAL_FACING)) return false
             if(!from.isIn(TagProvider.MARKINGS) || !other.isIn(TagProvider.MARKINGS)) return false
@@ -24,23 +24,23 @@ class MarkingUtil {
             return thisState == otherState || thisState == otherState.opposite
         }
 
-        fun getAbsoluteFromRelative(state: BlockState, relative: Side): Direction {
+        fun getAbsoluteFromRelative(state: BlockState, relative: MarkingSide): Direction {
             return when(state.get(Properties.HORIZONTAL_FACING)) {
                 Direction.NORTH -> when(relative) {
-                    Side.RIGHT -> Direction.EAST
-                    Side.LEFT -> Direction.WEST
+                    MarkingSide.RIGHT -> Direction.EAST
+                    MarkingSide.LEFT -> Direction.WEST
                 }
                 Direction.EAST -> when(relative) {
-                    Side.RIGHT -> Direction.SOUTH
-                    Side.LEFT -> Direction.NORTH
+                    MarkingSide.RIGHT -> Direction.SOUTH
+                    MarkingSide.LEFT -> Direction.NORTH
                 }
                 Direction.SOUTH -> when(relative) {
-                    Side.RIGHT -> Direction.WEST
-                    Side.LEFT -> Direction.EAST
+                    MarkingSide.RIGHT -> Direction.WEST
+                    MarkingSide.LEFT -> Direction.EAST
                 }
                 Direction.WEST -> when(relative) {
-                    Side.RIGHT -> Direction.NORTH
-                    Side.LEFT -> Direction.SOUTH
+                    MarkingSide.RIGHT -> Direction.NORTH
+                    MarkingSide.LEFT -> Direction.SOUTH
                 }
                 else -> Direction.NORTH
             }

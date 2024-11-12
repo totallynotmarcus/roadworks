@@ -3,6 +3,8 @@ package me.znepb.roadworks.util
 import net.minecraft.util.math.Direction
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.util.shape.VoxelShapes
+import org.joml.Vector3d
+import org.joml.Vector3f
 
 
 class RotateVoxelShape {
@@ -74,6 +76,20 @@ class RotateVoxelShape {
                 // Horizontal rotation
                 return rotateVoxelShapeHorizontally(from, to, shape)
             }
+        }
+
+        fun offsetFromDirectionXZ(shape: VoxelShape, direction: Direction, north: Vector3d, east: Vector3d, south: Vector3d, west: Vector3d): VoxelShape {
+            if(direction == Direction.UP || direction == Direction.DOWN) return shape
+
+            val offsetBy = when(direction) {
+                Direction.NORTH -> north
+                Direction.EAST -> east
+                Direction.SOUTH -> south
+                Direction.WEST -> west
+                else -> throw IllegalStateException()
+            }
+
+            return shape.offset(offsetBy.x, offsetBy.y, offsetBy.z)
         }
     }
 }

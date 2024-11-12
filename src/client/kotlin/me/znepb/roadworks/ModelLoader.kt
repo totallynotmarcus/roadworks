@@ -1,6 +1,7 @@
 package me.znepb.roadworks
 
 import me.znepb.roadworks.RoadworksMain.ModId
+import me.znepb.roadworks.render.models.UnbakedPostItemModel
 import me.znepb.roadworks.render.models.UnbakedSignItemModel
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier.OnLoad
@@ -15,6 +16,8 @@ class ModelLoader : ModelLoadingPlugin {
             val id = context.id()
             if (id != null && id.equals(SIGN_MODEL)) {
                 UnbakedSignItemModel()
+            } else if(id != null && id.equals(POST_MODEL)) {
+                UnbakedPostItemModel()
             } else {
                 // If we don't modify the model we just return the original as-is
                 original
@@ -25,5 +28,8 @@ class ModelLoader : ModelLoadingPlugin {
     companion object {
         val SIGN_MODEL: ModelIdentifier =
             ModelIdentifier(ModId("sign"), "inventory")
+
+        val POST_MODEL: ModelIdentifier =
+            ModelIdentifier(ModId("post"), "inventory")
     }
 }

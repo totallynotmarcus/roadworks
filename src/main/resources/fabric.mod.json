@@ -35,7 +35,11 @@
 		]
 	},
 	"mixins": [
-      "roadworks.mixins.json"
+        "roadworks.mixins.json",
+	    {
+			"config": "roadworks.client.mixins.json",
+			"environment": "client"
+	    }
 	],
 	"depends": {
 		"fabricloader": ">=0.14.21",

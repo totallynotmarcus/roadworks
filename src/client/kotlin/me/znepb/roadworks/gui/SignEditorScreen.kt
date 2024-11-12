@@ -2,8 +2,8 @@ package me.znepb.roadworks.gui
 
 import me.znepb.roadworks.RoadworksMain.ModId
 import me.znepb.roadworks.RoadworksMain.NAMESPACE
-import me.znepb.roadworks.RoadworksMain.logger
-import me.znepb.roadworks.block.sign.CustomSignBlockEntity
+import me.znepb.roadworks.container.PostContainerBlockEntity
+import me.znepb.roadworks.sign.RoadSignAttachment
 import me.znepb.roadworks.item.SignEditorScreenHandler
 import me.znepb.roadworks.network.EditSignPacket
 import me.znepb.roadworks.network.EditSignPacketClient.Companion.sendUpdateSignPacket
@@ -17,6 +17,7 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 import net.minecraft.util.math.BlockPos
 import org.lwjgl.glfw.GLFW
+import java.util.*
 import kotlin.math.floor
 
 class SignEditorScreen(handler: SignEditorScreenHandler, playerInventory: PlayerInventory, title: Text) :
@@ -39,8 +40,10 @@ class SignEditorScreen(handler: SignEditorScreenHandler, playerInventory: Player
 
     private fun complete() {
         val content = Charset.fromLongString(this.nameField.text)
-        logger.info(this.handler.getBlockPosition().toString())
-        sendUpdateSignPacket( EditSignPacket(this.handler.getBlockPosition(), content) )
+        val pos = this.handler.getBlockPosition()
+        val uuid = this.handler.getAttachmentUUID()
+        if(pos == null || uuid == null) return
+        sendUpdateSignPacket( EditSignPacket(pos, uuid, content) )
 
         this.client?.player?.closeHandledScreen()
     }
@@ -155,14 +158,17 @@ class SignEditorScreen(handler: SignEditorScreenHandler, playerInventory: Player
         if(!hasSetName && this.screenHandler.getBlockPosition() != BlockPos.ORIGIN) {
             val be = MinecraftClient.getInstance().player?.world?.getBlockEntity(this.handler.getBlockPosition())
 
-            if (be != null && be is CustomSignBlockEntity) {
-                var text = ""
-                be.contents.forEach {
-                    text += it.toString()
-                }
-                this.nameField.text = text
-            }
 
+            if (be != null && be is PostContainerBlockEntity) {
+                val attachment = this.handler.getAttachmentUUID()?.let { be.getAttachment(it) }
+                if(attachment != null && attachment is RoadSignAttachment) {
+                    var text = ""
+                    attachment.contents.forEach {
+                        text += it.toString()
+                    }
+                    this.nameField.text = text
+                }
+            }
             hasSetName = true
         }
 

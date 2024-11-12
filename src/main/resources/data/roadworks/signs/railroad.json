@@ -1,5 +1,5 @@
 {
-  "name": "block.roadworks.railroad",
+  "name": "sign.roadworks.railroad",
   "front_texture": "roadworks:block/signs/railroad",
   "back_texture": "roadworks:block/signs/back_circle"
 }

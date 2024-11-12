@@ -1,5 +1,5 @@
 {
-  "name": "block.roadworks.straight_right",
+  "name": "sign.roadworks.straight_right",
   "front_texture": "roadworks:block/signs/straight_right",
   "back_texture": "roadworks:block/signs/back_rectangle"
 }

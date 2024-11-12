@@ -1,13 +1,13 @@
 package me.znepb.roadworks.util
 
-import me.znepb.roadworks.Registry
+import me.znepb.roadworks.RoadworksRegistry
 import net.minecraft.block.BlockState
 
-enum class PostThickness(val id: Int, name: String) {
-    THIN(1, "thin"),
-    MEDIUM(2, "medium"),
-    THICK(3, "thick"),
-    NONE(0, "none");
+enum class PostThickness(val id: Int, name: String, val thickness: Double) {
+    THIN(1, "thin", 2.0 / 16.0),
+    MEDIUM(2, "medium", 4.0 / 16.0),
+    THICK(3, "thick", 6.0 / 16.0),
+    NONE(0, "none", 0.0);
 
     companion object {
         fun fromId(id: Int): PostThickness {
@@ -19,15 +19,8 @@ enum class PostThickness(val id: Int, name: String) {
             }
         }
 
-        fun fromState(state: BlockState): PostThickness {
-            return if(state.isOf(Registry.ModBlocks.THICK_POST)) THICK
-                   else if(state.isOf(Registry.ModBlocks.POST)) MEDIUM
-                   else if(state.isOf(Registry.ModBlocks.THIN_POST)) THIN
-                   else NONE
-        }
-
         fun fromName(name: String): PostThickness {
-            return when(name) {
+            return when(name.lowercase()) {
                 "thin" -> THIN
                 "medium" -> MEDIUM
                 "thick" -> THICK

@@ -1,39 +1,95 @@
 package me.znepb.roadworks.item
 
-import me.znepb.roadworks.Registry.ModScreens.SIGN_EDITOR_SCREEN_HANDLER
+import com.mojang.serialization.*
+import com.mojang.serialization.codecs.RecordCodecBuilder
+import io.netty.buffer.Unpooled
+import me.znepb.roadworks.RoadworksMain
+import me.znepb.roadworks.RoadworksMain.ModId
+import me.znepb.roadworks.RoadworksRegistry.ModScreens.SIGN_EDITOR_SCREEN_HANDLER
+import me.znepb.roadworks.network.EditSignPacket
+import me.znepb.roadworks.network.SyncContentPacket
+import me.znepb.roadworks.util.Charset
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider
+import net.minecraft.block.Block
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.Inventory
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
+import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.ArrayPropertyDelegate
 import net.minecraft.screen.PropertyDelegate
 import net.minecraft.screen.ScreenHandler
+import net.minecraft.server.MinecraftServer
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.Uuids
 import net.minecraft.util.math.BlockPos
+import org.apache.logging.log4j.core.util.UuidUtil
+import java.util.UUID
+import java.util.stream.Stream
 
-class SignEditorScreenHandler(syncId: Int, playerInventory: PlayerInventory, inventory: Inventory)
+class SignEditorScreenHandler(syncId: Int, playerInventory: PlayerInventory)
     : ScreenHandler(SIGN_EDITOR_SCREEN_HANDLER, syncId) {
-
-    val propertyDelegate: PropertyDelegate = ArrayPropertyDelegate(3) // x, y, z
+    private var pos: BlockPos? = null
+    private var uuid: UUID? = null
 
     init {
-        this.addProperties(propertyDelegate)
+        pos = BlockPos.ORIGIN
+        uuid = UUID.randomUUID()
     }
-
-    constructor(syncId: Int, playerInventory: PlayerInventory) :
-        this(syncId, playerInventory, SimpleInventory(0))
 
     fun setBlockPosition(pos: BlockPos) {
-        propertyDelegate.set(0, pos.x)
-        propertyDelegate.set(1, pos.y)
-        propertyDelegate.set(2, pos.z)
+        this.pos = pos
     }
 
-    fun getBlockPosition(): BlockPos {
-        return BlockPos(propertyDelegate.get(0), propertyDelegate.get(1), propertyDelegate.get(2))
+    fun setAttachmentUUID(uuid: UUID) {
+        this.uuid = uuid
     }
+
+    fun getBlockPosition() = this.pos
+    fun getAttachmentUUID() = this.uuid
 
     override fun canUse(player: PlayerEntity?) = true
 
     override fun quickMove(player: PlayerEntity?, slot: Int) = ItemStack.EMPTY
+
+    companion object {
+        fun sendDataToClient(player: ServerPlayerEntity, data: SyncData) {
+            val buf = PacketByteBuf(Unpooled.buffer())
+            buf.encodeAsJson(SyncData.CODEC, data)
+            ServerPlayNetworking.send(player, SyncData.PACKET_ID, buf)
+        }
+    }
+
+    data class SyncData(val pos: BlockPos, val uuid: UUID) {
+        companion object {
+            val PACKET_ID = RoadworksMain.ModId("sync_sign_editor_information")
+
+            private val MAP_CODEC = RecordCodecBuilder.mapCodec<SyncData>{ it.group(
+                BlockPos.CODEC.fieldOf("blockPos").forGetter(SyncData::pos),
+                Uuids.CODEC.fieldOf("attachmentID").forGetter(SyncData::uuid)
+            ).apply(it, ::SyncData) }
+
+            val CODEC: Codec<SyncData> = MapCodec.MapCodecCodec(object : MapCodec<SyncData>() {
+                override fun <T> keys(ops: DynamicOps<T>): Stream<T> {
+                    return MAP_CODEC.keys(ops)
+                }
+
+                override fun <T> decode(ops: DynamicOps<T>, input: MapLike<T>): DataResult<SyncData> {
+                    return MAP_CODEC.decode(ops, input)
+                }
+
+                override fun <T> encode(
+                    input: SyncData?,
+                    ops: DynamicOps<T>,
+                    prefix: RecordBuilder<T>
+                ): RecordBuilder<T>? {
+                    return MAP_CODEC.encode(input, ops, prefix)
+                }
+            })
+        }
+    }
 }

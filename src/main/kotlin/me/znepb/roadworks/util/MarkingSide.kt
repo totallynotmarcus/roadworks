@@ -1,9 +1,9 @@
 package me.znepb.roadworks.util
 
-enum class Side {
+enum class MarkingSide {
     RIGHT, LEFT;
 
-    fun opposite(): Side {
+    fun opposite(): MarkingSide {
         return if(this == RIGHT) LEFT else RIGHT
     }
 }

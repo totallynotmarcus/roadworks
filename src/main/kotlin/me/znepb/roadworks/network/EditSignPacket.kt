@@ -3,18 +3,22 @@ package me.znepb.roadworks.network
 import com.mojang.serialization.*
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import me.znepb.roadworks.RoadworksMain
-import me.znepb.roadworks.block.sign.CustomSignBlockEntity
+import me.znepb.roadworks.container.PostContainerBlockEntity
+import me.znepb.roadworks.sign.RoadSignAttachment
 import me.znepb.roadworks.util.Charset
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.minecraft.util.Uuids
 import net.minecraft.util.math.BlockPos
+import java.util.UUID
 import java.util.stream.Stream
 
-data class EditSignPacket(val blockPos: BlockPos, val characters: List<Charset>) {
+data class EditSignPacket(val blockPos: BlockPos, val attachmentId: UUID, val characters: List<Charset>) {
     companion object {
         val UPDATE_SIGN_PACKET_ID = RoadworksMain.ModId("update_sign_packet")
 
         private val MAP_CODEC = RecordCodecBuilder.mapCodec<EditSignPacket>{ it.group(
             BlockPos.CODEC.fieldOf("blockPos").forGetter(EditSignPacket::blockPos),
+            Uuids.CODEC.fieldOf("attachmentID").forGetter(EditSignPacket::attachmentId),
             Charset.ARRAY_CODEC.fieldOf("characters").forGetter(EditSignPacket::characters)
         ).apply(it, ::EditSignPacket) }
 
@@ -45,14 +49,17 @@ data class EditSignPacket(val blockPos: BlockPos, val characters: List<Charset>)
                     val world = player.world
                     val blockEntity = world?.let {
                         val be = it.getBlockEntity(signData.blockPos)
-                        if(be is CustomSignBlockEntity) be else null
+                        if(be is PostContainerBlockEntity) be else null
                     }
 
                     if(!blockPos.isWithinDistance(player.blockPos, 32.0) || blockEntity == null) {
                         return@execute
                     }
 
-                    blockEntity.contents = signData.characters
+                    val attachment = blockEntity.getAttachment(signData.attachmentId)
+                    if(attachment !is RoadSignAttachment) return@execute
+
+                    attachment.contents = signData.characters
                 }
             }
         }

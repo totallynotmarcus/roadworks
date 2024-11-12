@@ -19,15 +19,20 @@ object RenderUtils {
         lightmapCoord: Int,
         overlayLight: Int,
         modelLocation: Identifier,
-        direction: Direction?
+        direction: Direction?,
+        sides: List<Direction>
     ) {
         val model = MinecraftClient.getInstance().bakedModelManager.getModel(modelLocation)
 
         if(model != null) {
-            renderModel(transform, renderer, lightmapCoord, overlayLight, model, direction)
+            renderModel(transform, renderer, lightmapCoord, overlayLight, model, direction, sides)
         } else {
-            renderModel(transform, renderer, lightmapCoord, overlayLight, MinecraftClient.getInstance().bakedModelManager.missingModel, direction)
+            renderModel(transform, renderer, lightmapCoord, overlayLight, MinecraftClient.getInstance().bakedModelManager.missingModel, direction, sides)
         }
+    }
+
+    fun renderModel(transform: MatrixStack, renderer: VertexConsumer, lightmapCoord: Int, overlayLight: Int, modelLocation: Identifier, direction: Direction?) {
+        this.renderModel(transform, renderer, lightmapCoord, overlayLight, modelLocation, direction, Direction.entries)
     }
 
     fun renderModel(
@@ -36,21 +41,21 @@ object RenderUtils {
         lightmapCoord: Int,
         overlayLight: Int,
         model: BakedModel,
-        direction: Direction?
+        direction: Direction?,
+        sides: List<Direction>
     ) {
         val random = Random.create(0)
 
         random.setSeed(42L)
-        renderQuads(transform, renderer, lightmapCoord, overlayLight, model.getQuads(null as BlockState?,
-            direction, random))
+        renderQuads(transform, renderer, lightmapCoord, overlayLight, model.getQuads(null as BlockState?, direction, random), sides)
     }
 
-    fun renderQuads(transform: MatrixStack, buffer: VertexConsumer, lightmapCoord: Int, overlayLight: Int, quads: List<BakedQuad>) {
+    fun renderQuads(transform: MatrixStack, buffer: VertexConsumer, lightmapCoord: Int, overlayLight: Int, quads: List<BakedQuad>, sides: List<Direction>) {
         val matrix = transform.peek()
         val quads: Iterator<*> = quads.iterator()
         while (quads.hasNext()) {
             val bakedquad = quads.next() as BakedQuad
-            buffer.quad(matrix, bakedquad, 1F, 1F, 1F, lightmapCoord, overlayLight)
+            if(sides.contains(bakedquad.face)) buffer.quad(matrix, bakedquad, 1F, 1F, 1F, lightmapCoord, overlayLight)
         }
     }
 

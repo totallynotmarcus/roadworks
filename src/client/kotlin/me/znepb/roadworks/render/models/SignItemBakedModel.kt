@@ -41,8 +41,8 @@ class SignItemBakedModel(val sprite: Sprite) : BakedModel, FabricBakedModel {
     override fun emitItemQuads(stack: ItemStack, randomSupplier: Supplier<Random>?, context: RenderContext) {
         val type = getBlockEntityNbt(stack)?.getString("sign_type")
 
-        if(type != null && RoadworksMain.SIGN_TYPES.get(Identifier(type)) != null) {
-            val signType = RoadworksMain.SIGN_TYPES[Identifier(type)]!!
+        if(type != null && RoadworksMain.signageManager.getSign(Identifier(type)) != null) {
+            val signType = RoadworksMain.signageManager.getSign(Identifier(type))!!
             val spriteIdentifier = SpriteIdentifier(BLOCK_ATLAS_TEXTURE, signType.frontTexture)
             val sprite = spriteIdentifier.sprite
             val tint = 0xFFFFFFFF.toInt()

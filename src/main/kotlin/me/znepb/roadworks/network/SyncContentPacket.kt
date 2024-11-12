@@ -3,13 +3,7 @@ package me.znepb.roadworks.network
 import com.mojang.serialization.*
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import me.znepb.roadworks.RoadworksMain
-import me.znepb.roadworks.block.sign.CustomSignBlockEntity
-import me.znepb.roadworks.block.sign.SignType
-import me.znepb.roadworks.block.sign.SignTypeWithIdentifier
-import me.znepb.roadworks.util.Charset
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.BlockPos
+import me.znepb.roadworks.sign.SignTypeWithIdentifier
 import java.util.stream.Stream
 
 data class SyncContentPacket(val signs: List<SignTypeWithIdentifier>) {

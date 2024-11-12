@@ -1,6 +1,6 @@
 package me.znepb.roadworks.datagen
 
-import me.znepb.roadworks.Registry
+import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.RoadworksMain.ModId
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider.BlockTagProvider
@@ -11,14 +11,12 @@ import java.util.concurrent.CompletableFuture
 
 class TagProvider(output: FabricDataOutput, completableFuture: CompletableFuture<WrapperLookup>) : BlockTagProvider(output, completableFuture) {
     companion object {
-        val POSTS = TagKey.of(RegistryKeys.BLOCK, ModId("posts"))
-        val POST_MOUNTABLES = TagKey.of(RegistryKeys.BLOCK, ModId("post_mountables"))
         val MARKINGS = TagKey.of(RegistryKeys.BLOCK, ModId("marking"))
         val STANDALONE_MARKINGS = TagKey.of(RegistryKeys.BLOCK, ModId("standalone_markings"))
     }
 
     override fun configure(arg: WrapperLookup) {
-        with(Registry.ModBlocks) {
+        with(RoadworksRegistry.ModBlocks) {
             getOrCreateTagBuilder(STANDALONE_MARKINGS).add(
                 WHITE_ARROW_LEFT_MARKING,
                 WHITE_ARROW_STRAIGHT_MARKING,
@@ -123,28 +121,6 @@ class TagProvider(output: FabricDataOutput, completableFuture: CompletableFuture
                 YELLOW_L_RIGHT,
                 YELLOW_L_SHORT_LEFT,
                 YELLOW_L_SHORT_RIGHT
-            )
-
-            getOrCreateTagBuilder(POSTS)
-                .add(POST, THIN_POST, THICK_POST)
-
-            with(getOrCreateTagBuilder(POST_MOUNTABLES)) {
-                this.add(SIGN)
-            }
-
-            getOrCreateTagBuilder(POST_MOUNTABLES).add(
-                ONE_HEAD_GREEN_TRAFFIC_SIGNAL,
-                ONE_HEAD_RED_TRAFFIC_SIGNAL,
-                ONE_HEAD_YELLOW_TRAFFIC_SIGNAL,
-                THREE_HEAD_TRAFFIC_SIGNAL,
-                THREE_HEAD_TRAFFIC_SIGNAL_RIGHT,
-                THREE_HEAD_TRAFFIC_SIGNAL_STRAIGHT,
-                THREE_HEAD_TRAFFIC_SIGNAL_LEFT,
-                FIVE_HEAD_TRAFFIC_SIGNAL_LEFT,
-                FIVE_HEAD_TRAFFIC_SIGNAL_RIGHT,
-                PEDESTRIAN_SIGNAL,
-                PEDESTRIAN_BUTTON,
-                CUSTOM_SIGN
             )
         }
     }
