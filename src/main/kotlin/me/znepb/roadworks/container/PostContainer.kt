@@ -10,8 +10,12 @@ import net.minecraft.block.ShapeContext
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.block.enums.Thickness
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.BlockItem
 import net.minecraft.item.ItemPlacementContext
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
@@ -63,6 +67,14 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
                 }
             }
         }
+
+        fun createItemStackForThickness(thickness: PostThickness): ItemStack {
+            val item = ItemStack(RoadworksRegistry.ModItems.POST_CONTAINER)
+            val nbt = NbtCompound()
+            nbt.putString("thickness", thickness.name)
+            BlockItem.setBlockEntityNbt(item, RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY, nbt)
+            return item
+        }
     }
 
     override fun <T : BlockEntity?> getTicker(
@@ -111,6 +123,13 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
         (ctx.world.getBlockEntity(ctx.blockPos) as PostContainerBlockEntity?)?.getPlacementState(ctx)
         return super.getPlacementState(ctx)
+    }
+
+    override fun getPickStack(world: BlockView, pos: BlockPos, state: BlockState): ItemStack {
+        val be = world.getBlockEntity(pos)
+        if(be == null || be !is PostContainerBlockEntity) return ItemStack.EMPTY
+
+        return createItemStackForThickness(be.thickness)
     }
 
     private fun pickSideShape(blockEntity: PostContainerBlockEntity, connectingSize: PostThickness, direction: Direction): VoxelShape {
