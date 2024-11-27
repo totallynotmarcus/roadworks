@@ -9,7 +9,7 @@ import me.znepb.roadworks.util.Charset
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.util.Uuids
 import net.minecraft.util.math.BlockPos
-import java.util.UUID
+import java.util.*
 import java.util.stream.Stream
 
 data class EditSignPacket(val blockPos: BlockPos, val attachmentId: UUID, val characters: List<Charset>) {

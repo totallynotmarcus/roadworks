@@ -1,7 +1,7 @@
 package me.znepb.roadworks.marking
 
-import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.RoadworksMain
+import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.util.MarkingUtil.Companion.getCardinalDirectionFilled
 import me.znepb.roadworks.util.OrientedBlockStateSupplier
 import net.minecraft.block.Block

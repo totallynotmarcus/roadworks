@@ -4,31 +4,17 @@ import com.mojang.serialization.*
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import io.netty.buffer.Unpooled
 import me.znepb.roadworks.RoadworksMain
-import me.znepb.roadworks.RoadworksMain.ModId
 import me.znepb.roadworks.RoadworksRegistry.ModScreens.SIGN_EDITOR_SCREEN_HANDLER
-import me.znepb.roadworks.network.EditSignPacket
-import me.znepb.roadworks.network.SyncContentPacket
-import me.znepb.roadworks.util.Charset
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
-import net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider
-import net.minecraft.block.Block
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.inventory.Inventory
-import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
-import net.minecraft.screen.ArrayPropertyDelegate
-import net.minecraft.screen.PropertyDelegate
 import net.minecraft.screen.ScreenHandler
-import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Uuids
 import net.minecraft.util.math.BlockPos
-import org.apache.logging.log4j.core.util.UuidUtil
-import java.util.UUID
+import java.util.*
 import java.util.stream.Stream
 
 class SignEditorScreenHandler(syncId: Int, playerInventory: PlayerInventory)

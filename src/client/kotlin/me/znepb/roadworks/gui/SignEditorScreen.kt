@@ -3,10 +3,10 @@ package me.znepb.roadworks.gui
 import me.znepb.roadworks.RoadworksMain.ModId
 import me.znepb.roadworks.RoadworksMain.NAMESPACE
 import me.znepb.roadworks.container.PostContainerBlockEntity
-import me.znepb.roadworks.sign.RoadSignAttachment
 import me.znepb.roadworks.item.SignEditorScreenHandler
 import me.znepb.roadworks.network.EditSignPacket
 import me.znepb.roadworks.network.EditSignPacketClient.Companion.sendUpdateSignPacket
+import me.znepb.roadworks.sign.RoadSignAttachment
 import me.znepb.roadworks.util.Charset
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
@@ -17,7 +17,6 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 import net.minecraft.util.math.BlockPos
 import org.lwjgl.glfw.GLFW
-import java.util.*
 import kotlin.math.floor
 
 class SignEditorScreen(handler: SignEditorScreenHandler, playerInventory: PlayerInventory, title: Text) :

@@ -1,9 +1,9 @@
 package me.znepb.roadworks.render.attachments
 
 import me.znepb.roadworks.RoadworksMain
+import me.znepb.roadworks.attachment.AttachmentPosition
 import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.sign.RoadSignAttachment
-import me.znepb.roadworks.attachment.AttachmentPosition
 import me.znepb.roadworks.util.Charset
 import me.znepb.roadworks.util.RenderUtils
 import net.minecraft.client.render.VertexConsumer

@@ -2,8 +2,8 @@ package me.znepb.roadworks.item
 
 import me.znepb.roadworks.RoadworksMain
 import me.znepb.roadworks.attachment.LinkableAttachment
-import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.cabinet.TrafficCabinetBlockEntity
+import me.znepb.roadworks.container.PostContainerBlockEntity
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
@@ -15,7 +15,7 @@ import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import java.util.UUID
+import java.util.*
 
 class Linker(settings: Settings) : Item(settings) {
     var linking: BlockPos? = null

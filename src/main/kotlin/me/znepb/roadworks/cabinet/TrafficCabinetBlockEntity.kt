@@ -1,9 +1,9 @@
 package me.znepb.roadworks.cabinet
 
 import me.znepb.roadworks.RoadworksRegistry
+import me.znepb.roadworks.attachment.Attachment
 import me.znepb.roadworks.attachment.LinkableAttachment
 import me.znepb.roadworks.container.PostContainerBlockEntity
-import me.znepb.roadworks.attachment.Attachment
 import me.znepb.roadworks.signal.AbstractSignalAttachment
 import me.znepb.roadworks.signal.SignalLight
 import me.znepb.roadworks.signal.SignalType
@@ -16,7 +16,7 @@ import net.minecraft.nbt.NbtList
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
-import java.util.UUID
+import java.util.*
 
 class TrafficCabinetBlockEntity(
     pos: BlockPos,

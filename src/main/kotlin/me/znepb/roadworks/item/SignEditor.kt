@@ -2,8 +2,8 @@ package me.znepb.roadworks.item
 
 import me.znepb.roadworks.RoadworksMain.NAMESPACE
 import me.znepb.roadworks.container.PostContainerBlockEntity
-import me.znepb.roadworks.sign.RoadSignAttachment
 import me.znepb.roadworks.item.SignEditorScreenHandler.Companion.sendDataToClient
+import me.znepb.roadworks.sign.RoadSignAttachment
 import net.minecraft.item.Item
 import net.minecraft.item.ItemUsageContext
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory

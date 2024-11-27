@@ -1,8 +1,8 @@
 package me.znepb.roadworks.attachment
 
 import me.znepb.roadworks.RoadworksRegistry
-import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.cabinet.TrafficCabinetBlockEntity
+import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.util.MiscUtils.blockPosFromNbtIntArray
 import me.znepb.roadworks.util.MiscUtils.blockPosToNbtIntArray
 import net.minecraft.block.BlockState

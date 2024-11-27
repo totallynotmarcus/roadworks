@@ -1,12 +1,6 @@
 package me.znepb.roadworks.render.models
 
 import me.znepb.roadworks.RoadworksMain.ModId
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_MEDIUM_FOOTER_MODEL
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_MEDIUM_MID_MODEL
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_THICK_FOOTER_MODEL
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_THICK_MID_MODEL
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_THIN_FOOTER_MODEL
-import me.znepb.roadworks.render.PostContainerRenderer.Companion.POST_THIN_MID_MODEL
 import me.znepb.roadworks.util.PostThickness
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper
@@ -18,7 +12,6 @@ import net.minecraft.client.render.model.BakedQuad
 import net.minecraft.client.render.model.json.ModelOverrideList
 import net.minecraft.client.render.model.json.ModelTransformation
 import net.minecraft.client.texture.Sprite
-import net.minecraft.item.BlockItem.getBlockEntityNbt
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos

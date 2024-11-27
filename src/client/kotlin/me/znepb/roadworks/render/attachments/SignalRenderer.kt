@@ -1,9 +1,9 @@
 package me.znepb.roadworks.render.attachments
 
 import me.znepb.roadworks.RoadworksMain
+import me.znepb.roadworks.datagen.ModelProvider
 import me.znepb.roadworks.signal.AbstractSignalAttachment
 import me.znepb.roadworks.signal.SignalLight
-import me.znepb.roadworks.datagen.ModelProvider
 import me.znepb.roadworks.util.RenderUtils
 import net.minecraft.block.BlockState
 import net.minecraft.client.MinecraftClient

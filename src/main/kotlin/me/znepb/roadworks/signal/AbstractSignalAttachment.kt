@@ -1,8 +1,8 @@
 package me.znepb.roadworks.signal
 
+import me.znepb.roadworks.attachment.AttachmentType
 import me.znepb.roadworks.attachment.LinkableAttachment
 import me.znepb.roadworks.container.PostContainerBlockEntity
-import me.znepb.roadworks.attachment.AttachmentType
 import net.minecraft.nbt.NbtCompound
 
 abstract class AbstractSignalAttachment(

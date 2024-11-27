@@ -1,7 +1,7 @@
 package me.znepb.roadworks.datagen
 
-import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.RoadworksMain.ModId
+import me.znepb.roadworks.RoadworksRegistry
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider.BlockTagProvider
 import net.minecraft.registry.RegistryKeys

@@ -1,8 +1,8 @@
 package me.znepb.roadworks.signal
 
 import me.znepb.roadworks.RoadworksRegistry
-import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.attachment.AttachmentType
+import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.util.RotateVoxelShape
 import net.minecraft.block.BlockWithEntity
 import net.minecraft.block.ShapeContext

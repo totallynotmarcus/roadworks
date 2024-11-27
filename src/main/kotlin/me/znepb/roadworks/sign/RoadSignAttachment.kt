@@ -1,19 +1,14 @@
 package me.znepb.roadworks.sign
 
 import me.znepb.roadworks.RoadworksRegistry
-import me.znepb.roadworks.container.PostContainerBlockEntity
-import me.znepb.roadworks.attachment.Attachment
 import me.znepb.roadworks.attachment.AttachmentPosition
 import me.znepb.roadworks.attachment.PositionableAttachment
+import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.util.Charset
 import me.znepb.roadworks.util.RotateVoxelShape
 import net.minecraft.block.BlockWithEntity
 import net.minecraft.block.ShapeContext
-import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.util.ActionResult
-import net.minecraft.util.Hand
-import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.Direction
 import net.minecraft.util.shape.VoxelShape
 import org.joml.Vector3d

@@ -1,9 +1,9 @@
 package me.znepb.roadworks.util
 
 import me.znepb.roadworks.RoadworksRegistry
+import me.znepb.roadworks.datagen.TagProvider
 import me.znepb.roadworks.marking.OneSideFilledMarking
 import me.znepb.roadworks.marking.OneSideFilledMarking.Companion.SHOULD_FILL
-import me.znepb.roadworks.datagen.TagProvider
 import net.minecraft.block.BlockState
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.Direction

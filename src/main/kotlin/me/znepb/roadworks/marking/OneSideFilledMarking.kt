@@ -1,10 +1,10 @@
 package me.znepb.roadworks.marking
 
 import me.znepb.roadworks.RoadworksMain
+import me.znepb.roadworks.util.MarkingSide
 import me.znepb.roadworks.util.MarkingUtil.Companion.doesBorder
 import me.znepb.roadworks.util.MarkingUtil.Companion.getAbsoluteFromRelative
 import me.znepb.roadworks.util.OrientedBlockStateSupplier
-import me.znepb.roadworks.util.MarkingSide
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.data.client.BlockStateModelGenerator

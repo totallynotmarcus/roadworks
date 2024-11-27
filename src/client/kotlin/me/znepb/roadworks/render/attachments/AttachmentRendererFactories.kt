@@ -2,7 +2,6 @@ package me.znepb.roadworks.render.attachments
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
-import me.znepb.roadworks.RoadworksMain
 import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.attachment.Attachment
 import me.znepb.roadworks.attachment.AttachmentType

@@ -9,7 +9,7 @@ import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Uuids
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import java.util.UUID
+import java.util.*
 import java.util.stream.Stream
 
 data class DestroyAttachmentPacket(val blockPos: BlockPos, val world: RegistryKey<World>, val uuid: UUID) {

@@ -3,7 +3,7 @@ package me.znepb.roadworks.init
 import me.znepb.roadworks.RoadworksClient.logger
 import me.znepb.roadworks.RoadworksMain.ModId
 import me.znepb.roadworks.datagen.ModelProvider
-import me.znepb.roadworks.render.*
+import me.znepb.roadworks.render.PostContainerRenderer
 import me.znepb.roadworks.render.attachments.*
 import me.znepb.roadworks.render.models.PostItemBakedModel
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin

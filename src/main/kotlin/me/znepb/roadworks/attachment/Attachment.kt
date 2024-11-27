@@ -14,7 +14,7 @@ import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.Direction
 import net.minecraft.util.shape.VoxelShape
 import org.joml.Vector3f
-import java.util.UUID
+import java.util.*
 
 abstract class Attachment(
     val type: AttachmentType<*>,

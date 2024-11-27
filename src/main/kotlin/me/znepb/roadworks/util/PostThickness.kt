@@ -1,8 +1,5 @@
 package me.znepb.roadworks.util
 
-import me.znepb.roadworks.RoadworksRegistry
-import net.minecraft.block.BlockState
-
 enum class PostThickness(val id: Int, name: String, val thickness: Double) {
     THIN(1, "thin", 2.0 / 16.0),
     MEDIUM(2, "medium", 4.0 / 16.0),
