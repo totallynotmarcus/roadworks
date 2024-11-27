@@ -60,12 +60,12 @@ public class ClientPlayerInteractionManagerMixin {
         }
     }
 
-    @Inject(cancellable = true, method="Lnet/minecraft/client/network/ClientPlayerInteractionManager;attackBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)Z", at=@At("HEAD"))
+    @Inject(cancellable = true, method= "attackBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)Z", at=@At("HEAD"))
     public void attackBlock(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
         check(pos, direction, cir);
     }
 
-    @Inject(cancellable = true, method="Lnet/minecraft/client/network/ClientPlayerInteractionManager;updateBlockBreakingProgress(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)Z", at=@At("HEAD"))
+    @Inject(cancellable = true, method= "updateBlockBreakingProgress(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)Z", at=@At("HEAD"))
     public void updateBlockBreakingProgress(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
         if (this.blockBreakingCooldown > 0) {
             --this.blockBreakingCooldown;

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap
 import me.znepb.roadworks.RoadworksMain.NAMESPACE
 import me.znepb.roadworks.attachment.Attachment
 import me.znepb.roadworks.attachment.AttachmentType
+import me.znepb.roadworks.container.PostContainer.Companion.createItemStackForThickness
 import me.znepb.roadworks.gui.SignEditorScreen
 import me.znepb.roadworks.init.ModelLoader
 import me.znepb.roadworks.item.SignEditorScreenHandler
@@ -47,12 +48,7 @@ object RoadworksClient : ClientModInitializer {
 
 			// Generate posts for each thickness
 			for(i in 1 .. 3) {
-				val thickness = PostThickness.fromId(i)
-				val item = ItemStack(RoadworksRegistry.ModItems.POST_CONTAINER)
-				val nbt = NbtCompound()
-				nbt.putString("thickness", thickness.name)
-				BlockItem.setBlockEntityNbt(item, RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY, nbt)
-				it.add(item)
+				it.add(createItemStackForThickness(PostThickness.fromId(i)))
 			}
 		}
 

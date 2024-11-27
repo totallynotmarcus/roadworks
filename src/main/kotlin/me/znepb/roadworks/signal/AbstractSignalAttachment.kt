@@ -77,8 +77,13 @@ abstract class AbstractSignalAttachment(
         }
 
         if(queue.size > 0) {
-            signalType.lights.forEach {
-                queue[it]?.let { it1 -> this.setSignalActive(it, it1) }
+            signalType.lights.forEach { signal ->
+                if(this.signalState[signal] != queue[signal]) {
+                    queue[signal]?.let { value ->
+                        this.setSignalActive(signal, value)
+                        this.markDirty()
+                    }
+                }
             }
         }
     }

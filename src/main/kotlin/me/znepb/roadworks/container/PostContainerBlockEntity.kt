@@ -4,7 +4,6 @@ import me.znepb.roadworks.RoadworksMain.logger
 import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.RoadworksRegistry.ModBlocks.POST_CONTAINER
 import me.znepb.roadworks.attachment.Attachment
-import me.znepb.roadworks.datagen.TagProvider
 import me.znepb.roadworks.util.PostThickness
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
@@ -12,14 +11,14 @@ import net.minecraft.block.Blocks
 import net.minecraft.block.ShapeContext
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.BlockItem.getBlockEntityNbt
-import net.minecraft.item.ItemPlacementContext
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtList
 import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.network.packet.Packet
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket
+import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
@@ -29,6 +28,7 @@ import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 import net.minecraft.world.World
+import net.minecraft.world.WorldAccess
 import java.util.*
 
 open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY, pos, state) {
@@ -41,6 +41,9 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
     var west = PostThickness.NONE
     var footer = false
     var attachments = listOf<Attachment>()
+    var stub = false
+    private var doneInitialUpdate = false
+    private var initialNBTFetch = false
 
     companion object {
         fun onTick(world: World, pos: BlockPos, state: BlockState, blockEntity: PostContainerBlockEntity?) {
@@ -48,17 +51,8 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         }
     }
 
-    init {
-        getConnections()
-    }
-
-    override fun toUpdatePacket(): Packet<ClientPlayPacketListener> {
-        return BlockEntityUpdateS2CPacket.create(this)
-    }
-
-    override fun toInitialChunkDataNbt(): NbtCompound? {
-        return createNbt()
-    }
+    override fun toUpdatePacket() = BlockEntityUpdateS2CPacket.create(this)
+    override fun toInitialChunkDataNbt() = this.createNbt()
 
     public override fun writeNbt(nbt: NbtCompound) {
         nbt.putBoolean("footer", footer)
@@ -69,6 +63,7 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         nbt.putString("east", east.name)
         nbt.putString("south", south.name)
         nbt.putString("west", west.name)
+        nbt.putBoolean("stub", stub)
 
         val attachmentList = NbtList()
         this.attachments.forEach {
@@ -81,6 +76,8 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
     }
 
     override fun readNbt(nbt: NbtCompound) {
+        initialNBTFetch = true
+
         super.readNbt(nbt)
 
         footer = nbt.getBoolean("footer")
@@ -91,6 +88,7 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         east = PostThickness.fromName(nbt.getString("east"))
         south = PostThickness.fromName(nbt.getString("south"))
         west = PostThickness.fromName(nbt.getString("west"))
+        stub = nbt.getBoolean("stub") || false
 
         if(thickness == PostThickness.NONE) {
             thickness = PostThickness.MEDIUM
@@ -133,8 +131,15 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
             }
         }
 
+        if(!doneInitialUpdate) {
+            if(this.canCheckConnections(this.world)) {
+                this.getConnections(this.world!!)
+                doneInitialUpdate = true
+            }
+        }
+
         this.attachments = attachments
-        this.getConnections()
+        this.getWorld()?.getBlockState(this.getPos())?.updateNeighbors(this.world, this.pos, Block.NOTIFY_NEIGHBORS, 2)
     }
 
     fun addAttachment(attachment: Attachment, facing: Direction) {
@@ -147,6 +152,8 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         attachments.addAll(0, this.attachments)
         attachments.add(attachment)
         this.attachments = attachments.toList()
+        this.markDirty()
+        getConnections(this.world!!)
     }
 
     fun removeAttachment(uuid: UUID) {
@@ -161,6 +168,8 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         }
 
         this.attachments = newAttachments.toList()
+        this.markDirty()
+        getConnections(this.world!!)
     }
 
     fun getAttachment(uuid: UUID): Attachment? {
@@ -221,38 +230,36 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         return this.attachments.filter { it.facing == direction }
     }
 
-    fun getPlacementState(ctx: ItemPlacementContext) {
-        this.getConnections()
+    private fun canCheckConnections(world: WorldAccess?): Boolean {
+        val chunk = world?.chunkManager?.isChunkLoaded(pos.x / 16, pos.z / 16)
+        val chunkN = world?.chunkManager?.isChunkLoaded(pos.x / 16, (pos.z / 16) - 1)
+        val chunkE = world?.chunkManager?.isChunkLoaded((pos.x / 16) + 1, pos.z / 16)
+        val chunkS = world?.chunkManager?.isChunkLoaded(pos.x / 16, (pos.z / 16) + 1)
+        val chunkW = world?.chunkManager?.isChunkLoaded((pos.x / 16) - 1, pos.z / 16)
 
-        val stackInHand = ctx.player?.getStackInHand(ctx.hand)
-        if(stackInHand != null) {
-            val nbt = getBlockEntityNbt(stackInHand)
-            val thicknessName = nbt?.getString("thickness")
-            val thickness = thicknessName?.let { PostThickness.fromName(it) }
-            if(thickness != null) {
-                this.thickness = thickness
-            }
-        }
+        return chunk == true && chunkN == true && chunkE == true && chunkS == true && chunkW == true
     }
 
-    fun getConnections() {
-        val stateDown = this.world?.getBlockState(pos.down())
-        val stateUp = this.world?.getBlockState(pos.up())
-        val stateNorth = this.world?.getBlockState(pos.north())
-        val stateEast = this.world?.getBlockState(pos.east())
-        val stateSouth = this.world?.getBlockState(pos.south())
-        val stateWest = this.world?.getBlockState(pos.west())
+    fun getConnections(world: WorldAccess) {
+        if(canCheckConnections(world)) {
+            val stateDown = world.getBlockState(pos.down())
+            val stateUp = world.getBlockState(pos.up())
+            val stateNorth = world.getBlockState(pos.north())
+            val stateEast = world.getBlockState(pos.east())
+            val stateSouth = world.getBlockState(pos.south())
+            val stateWest = world.getBlockState(pos.west())
 
-        footer = shouldBeFooter(stateDown)
-        down = if(!footer) this.getConnectionThickness(pos.down(), stateDown, Direction.DOWN) else PostThickness.NONE
-        up = this.getConnectionThickness(pos.up(), stateUp, Direction.UP)
-        north = this.getConnectionThickness(pos.north(), stateNorth, Direction.NORTH)
-        south = this.getConnectionThickness(pos.south(), stateSouth, Direction.SOUTH)
-        east = this.getConnectionThickness(pos.east(), stateEast, Direction.EAST)
-        west = this.getConnectionThickness(pos.west(), stateWest, Direction.WEST)
+            footer = shouldBeFooter(stateDown)
+            down = if(!footer) this.getConnectionThickness(pos.down(), stateDown, Direction.DOWN) else PostThickness.NONE
+            up = this.getConnectionThickness(pos.up(), stateUp, Direction.UP)
+            north = this.getConnectionThickness(pos.north(), stateNorth, Direction.NORTH)
+            south = this.getConnectionThickness(pos.south(), stateSouth, Direction.SOUTH)
+            east = this.getConnectionThickness(pos.east(), stateEast, Direction.EAST)
+            west = this.getConnectionThickness(pos.west(), stateWest, Direction.WEST)
+            stub = stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE
 
-        this.markDirty()
-        this.world?.updateListeners(pos, this.cachedState, this.cachedState, Block.NOTIFY_LISTENERS)
+            this.markDirty()
+        }
     }
 
     private fun shouldBeFooter(state: BlockState?): Boolean {
@@ -293,22 +300,30 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
     }
 
     fun onTick(world: World) {
-        val chunk = world.chunkManager.isChunkLoaded(pos.x / 16, pos.z / 16)
-        val chunkN = world.chunkManager.isChunkLoaded(pos.x / 16, (pos.z / 16) - 1)
-        val chunkE = world.chunkManager.isChunkLoaded((pos.x / 16) + 1, pos.z / 16)
-        val chunkS = world.chunkManager.isChunkLoaded(pos.x / 16, (pos.z / 16) + 1)
-        val chunkW = world.chunkManager.isChunkLoaded((pos.x / 16) - 1, pos.z / 16)
-
-        if(chunk && chunkN && chunkE && chunkS && chunkW) {
-            this.getConnections()
-        }
-
+        this.setWorld(world)
         this.attachments.forEach { it.onTick() }
     }
+
+    override fun markDirty() {
+        this.world?.updateListeners(pos, this.cachedState, this.cachedState, Block.NOTIFY_LISTENERS)
+        super.markDirty()
+    }
+
+    fun isHorizontal() = this.north == PostThickness.NONE || this.east != PostThickness.NONE || this.south == PostThickness.NONE || this.west != PostThickness.NONE
+    fun isVertical() = this.up != PostThickness.NONE || this.down != PostThickness.NONE || this.footer
 
     fun remove() {
         this.attachments.forEach {
             it.remove()
         }
+    }
+
+    fun onUse(player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
+        if(player.isHolding(RoadworksRegistry.ModItems.WRENCH)) {
+            stub = !stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE
+            return if(up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE) ActionResult.SUCCESS else ActionResult.PASS
+        }
+
+        return ActionResult.PASS
     }
 }

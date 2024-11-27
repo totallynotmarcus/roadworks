@@ -29,12 +29,15 @@ class PostContainerRenderer(private val ctx: BlockEntityRendererFactory.Context)
         val POST_THIN_EXT_MODEL = ModId("block/post_thin_extension")
         val POST_THIN_FOOTER_MODEL = ModId("block/post_thin_footer")
         val POST_THIN_MID_MODEL = ModId("block/post_thin_midsection")
+        val POST_THIN_STUB_MODEL = ModId("block/post_thin_stub")
         val POST_MEDIUM_EXT_MODEL = ModId("block/post_medium_extension")
         val POST_MEDIUM_FOOTER_MODEL = ModId("block/post_medium_footer")
         val POST_MEDIUM_MID_MODEL = ModId("block/post_medium_midsection")
+        val POST_MEDIUM_STUB_MODEL = ModId("block/post_medium_stub")
         val POST_THICK_EXT_MODEL = ModId("block/post_thick_extension")
         val POST_THICK_FOOTER_MODEL = ModId("block/post_thick_footer")
         val POST_THICK_MID_MODEL = ModId("block/post_thick_midsection")
+        val POST_THICK_STUB_MODEL = ModId("block/post_thick_stub")
     }
 
     private fun getSidesToRenderForDirection(direction: Direction): List<Direction> {
@@ -149,13 +152,13 @@ class PostContainerRenderer(private val ctx: BlockEntityRendererFactory.Context)
 
         val interiorSidesToRender = Direction.entries.toMutableList()
         if(blockEntity.up.thickness >= blockEntity.thickness.thickness) interiorSidesToRender.remove(Direction.UP)
-        if(blockEntity.down.thickness >= blockEntity.thickness.thickness || blockEntity.footer) interiorSidesToRender.remove(Direction.DOWN)
+        if(blockEntity.down.thickness >= blockEntity.thickness.thickness || blockEntity.footer && !blockEntity.stub) interiorSidesToRender.remove(Direction.DOWN)
         if(blockEntity.north.thickness >= blockEntity.thickness.thickness) interiorSidesToRender.remove(Direction.NORTH)
         if(blockEntity.east.thickness >= blockEntity.thickness.thickness) interiorSidesToRender.remove(Direction.EAST)
         if(blockEntity.south.thickness >= blockEntity.thickness.thickness) interiorSidesToRender.remove(Direction.SOUTH)
         if(blockEntity.west.thickness >= blockEntity.thickness.thickness) interiorSidesToRender.remove(Direction.WEST)
 
-        RenderUtils.renderModel(matrices, buffer, light, overlay, midsectionModel, null, interiorSidesToRender)
+        if(!blockEntity.stub) RenderUtils.renderModel(matrices, buffer, light, overlay, midsectionModel, null, interiorSidesToRender)
 
         addSideThickness(blockEntity, blockEntity.cachedState, Direction.NORTH, blockEntity.north, matrices, buffer, light, overlay)
         addSideThickness(blockEntity, blockEntity.cachedState, Direction.EAST, blockEntity.east, matrices, buffer, light, overlay)
@@ -172,6 +175,15 @@ class PostContainerRenderer(private val ctx: BlockEntityRendererFactory.Context)
             }
 
             RenderUtils.renderModel(matrices, buffer, light, overlay, footerModel, null, listOf(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
+        } else if(blockEntity.stub) {
+            // Render stub
+            val stubModel = when(blockEntity.thickness) {
+                PostThickness.THICK -> POST_THICK_STUB_MODEL
+                PostThickness.THIN -> POST_THIN_STUB_MODEL
+                else -> POST_MEDIUM_STUB_MODEL
+            }
+
+            RenderUtils.renderModel(matrices, buffer, light, overlay, stubModel, null, listOf(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST))
         } else {
             addSideThickness(blockEntity, blockEntity.cachedState, Direction.DOWN, blockEntity.down, matrices, buffer, light, overlay)
         }

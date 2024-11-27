@@ -3,18 +3,24 @@ package me.znepb.roadworks.sign
 import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.attachment.Attachment
+import me.znepb.roadworks.attachment.AttachmentPosition
+import me.znepb.roadworks.attachment.PositionableAttachment
 import me.znepb.roadworks.util.Charset
 import me.znepb.roadworks.util.RotateVoxelShape
 import net.minecraft.block.BlockWithEntity
 import net.minecraft.block.ShapeContext
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
+import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.Direction
 import net.minecraft.util.shape.VoxelShape
 import org.joml.Vector3d
 
 class RoadSignAttachment(
     container: PostContainerBlockEntity,
-) : Attachment(RoadworksRegistry.ModAttachments.ROAD_SIGN_ATTACHMENT, container) {
+) : PositionableAttachment(RoadworksRegistry.ModAttachments.ROAD_SIGN_ATTACHMENT, container) {
     var color = "green"
     var contents = listOf<Charset>()
 
@@ -32,14 +38,20 @@ class RoadSignAttachment(
     override fun getShape(context: ShapeContext): VoxelShape {
         val width = this.getContentsPixelWidth()
         val thickness = this.container.thickness.thickness * 0.5
+        val offsetHeight = when(this.position) {
+            AttachmentPosition.TOP -> 0.75
+            AttachmentPosition.MIDDLE -> 0.375
+            AttachmentPosition.BOTTOM -> 0.0
+        }
+
         val shape = BlockWithEntity.createCuboidShape(
             (8 - width / 2).toDouble(),
-            6.0,
+            0.0,
             7.5,
             (8 + width / 2).toDouble(),
-            10.0,
+            4.0,
             8.5
-        )
+        ).offset(0.0, offsetHeight, 0.0)
 
         return RotateVoxelShape.offsetFromDirectionXZ(
             RotateVoxelShape.rotateVoxelShape(shape, Direction.NORTH, this.facing),
@@ -63,6 +75,8 @@ class RoadSignAttachment(
     }
 
     override fun readNBT(nbt: NbtCompound) {
+        super.readNBT(nbt)
+
         this.color = nbt.getString("color")
         val contents = nbt.getIntArray("contents")
 
@@ -71,7 +85,7 @@ class RoadSignAttachment(
             newList.add(Charset.entries[it])
         }
         this.contents = newList
-
-        super.readNBT(nbt)
     }
+
+    override fun isPositionable() = true
 }

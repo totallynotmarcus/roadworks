@@ -1,21 +1,16 @@
 package me.znepb.roadworks.container
 
+import me.znepb.roadworks.RoadworksMain.logger
 import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.util.PostThickness
 import me.znepb.roadworks.util.RotateVoxelShape
-import net.minecraft.block.BlockEntityProvider
-import net.minecraft.block.BlockState
-import net.minecraft.block.BlockWithEntity
-import net.minecraft.block.ShapeContext
+import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.block.enums.Thickness
+import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.BlockItem
-import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
@@ -34,18 +29,21 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         val FOOTER_SHAPE_THICK = VoxelShapes.union(
             BOTTOM_SHAPE_THICK, createCuboidShape(3.0, 0.0, 3.0, 13.0, 3.0, 13.0)
         )
+        val STUB_SHAPE_THICK = createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0)
 
         val BOTTOM_SHAPE_MEDIUM = createCuboidShape(6.0, 0.0, 6.0, 10.0, 6.0, 10.0)
         val MIDSECTION_SHAPE_MEDIUM = createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0)
         val FOOTER_SHAPE_MEDIUM = VoxelShapes.union(
             BOTTOM_SHAPE_MEDIUM, createCuboidShape(5.0, 0.0, 5.0, 11.0, 2.0, 11.0)
         )
+        val STUB_SHAPE_MEDIUM = createCuboidShape(6.0, 0.0, 6.0, 10.0, 5.0, 10.0)
 
         val BOTTOM_SHAPE_THIN = createCuboidShape(7.0, 0.0, 7.0, 9.0, 7.0, 9.0)
         val MIDSECTION_SHAPE_THIN = createCuboidShape(7.0, 7.0, 7.0, 9.0, 9.0, 9.0)
         val FOOTER_SHAPE_THIN = VoxelShapes.union(
             BOTTOM_SHAPE_THIN, createCuboidShape(6.0, 0.0, 6.0, 10.0, 1.0, 10.0)
         )
+        val STUB_SHAPE_THIN = createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0)
 
         fun getShapeFromDirectionAndSize(direction: Direction, otherSize: PostThickness, thisSize: PostThickness?): VoxelShape {
             if(thisSize == null) return VoxelShapes.empty()
@@ -70,11 +68,12 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
 
         fun createItemStackForThickness(thickness: PostThickness): ItemStack {
             val item = ItemStack(RoadworksRegistry.ModItems.POST_CONTAINER)
-            val nbt = NbtCompound()
-            nbt.putString("thickness", thickness.name)
-            BlockItem.setBlockEntityNbt(item, RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY, nbt)
+            item.orCreateNbt.putString("thickness", thickness.name)
             return item
         }
+
+        fun blockEntity(world: BlockView, pos: BlockPos): PostContainerBlockEntity? =
+            world.getBlockEntity(pos, RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY).orElse(null)
     }
 
     override fun <T : BlockEntity?> getTicker(
@@ -88,6 +87,37 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
 
     override fun isTransparent(state: BlockState, world: BlockView, pos: BlockPos): Boolean {
         return true
+    }
+
+    override fun neighborUpdate(
+        state: BlockState,
+        world: World,
+        pos: BlockPos,
+        sourceBlock: Block,
+        sourcePos: BlockPos,
+        notify: Boolean
+    ) {
+        blockEntity(world, pos)?.getConnections(world)
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify)
+    }
+
+    override fun getStateForNeighborUpdate(
+        state: BlockState,
+        direction: Direction,
+        neighborState: BlockState,
+        world: WorldAccess,
+        pos: BlockPos,
+        neighborPos: BlockPos
+    ): BlockState? {
+        blockEntity(world, pos)?.getConnections(world)
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos)
+    }
+
+    override fun getPickStack(world: BlockView, pos: BlockPos, state: BlockState): ItemStack {
+        val be = world.getBlockEntity(pos)
+        if(be == null || be !is PostContainerBlockEntity) return ItemStack.EMPTY
+
+        return createItemStackForThickness(be.thickness)
     }
 
     override fun getCollisionShape(
@@ -108,29 +138,6 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         return this.getShape(world, pos, context)
     }
 
-    override fun getStateForNeighborUpdate(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: WorldAccess,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState? {
-        (world.getBlockEntity(pos) as PostContainerBlockEntity?)?.getConnections()
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos)
-    }
-
-    override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
-        (ctx.world.getBlockEntity(ctx.blockPos) as PostContainerBlockEntity?)?.getPlacementState(ctx)
-        return super.getPlacementState(ctx)
-    }
-
-    override fun getPickStack(world: BlockView, pos: BlockPos, state: BlockState): ItemStack {
-        val be = world.getBlockEntity(pos)
-        if(be == null || be !is PostContainerBlockEntity) return ItemStack.EMPTY
-
-        return createItemStackForThickness(be.thickness)
-    }
 
     private fun pickSideShape(blockEntity: PostContainerBlockEntity, connectingSize: PostThickness, direction: Direction): VoxelShape {
         return when(connectingSize) {
@@ -171,11 +178,20 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         }
     }
 
-    fun getPostShape(world: BlockView, pos: BlockPos, shapeContext: ShapeContext): VoxelShape {
+    private fun getPostShape(world: BlockView, pos: BlockPos, shapeContext: ShapeContext): VoxelShape {
         if (world.getBlockEntity(pos) !is PostContainerBlockEntity)
             return VoxelShapes.empty()
 
         val blockEntity = world.getBlockEntity(pos) as PostContainerBlockEntity
+
+        if(blockEntity.stub) {
+            return when(blockEntity.thickness) {
+                PostThickness.THICK -> STUB_SHAPE_THICK
+                PostThickness.MEDIUM -> STUB_SHAPE_MEDIUM
+                PostThickness.THIN -> STUB_SHAPE_THIN
+                else -> VoxelShapes.empty()
+            }
+        }
 
         var shape = this.getMidsectionShape(blockEntity)
         if (blockEntity.footer) shape = VoxelShapes.union(shape, this.getFooterShape(blockEntity))
@@ -205,12 +221,18 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         return shape
     }
 
-    override fun createBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
-        return PostContainerBlockEntity(pos, state)
-    }
+    override fun createBlockEntity(pos: BlockPos, state: BlockState) = PostContainerBlockEntity(pos, state)
 
-    override fun spawnBreakParticles(world: World?, player: PlayerEntity?, pos: BlockPos?, state: BlockState?) {
-        super.spawnBreakParticles(world, player, pos, state)
+    override fun onPlaced(
+        world: World,
+        pos: BlockPos,
+        state: BlockState,
+        placer: LivingEntity?,
+        itemStack: ItemStack
+    ) {
+        super.onPlaced(world, pos, state, placer, itemStack)
+
+        blockEntity(world, pos)?.thickness = PostContainerItem.getThickness(itemStack)
     }
 
     override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
@@ -230,7 +252,7 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         val be = world.getBlockEntity(pos)
         if(be is PostContainerBlockEntity) {
             val attachment = be.getAttachmentHit(hit)
-            return attachment?.onUse(player, hand, hit) ?: ActionResult.PASS
+            return if(attachment != null) attachment.onUse(player, hand, hit) ?: ActionResult.PASS else be.onUse(player, hand, hit)
         }
         return ActionResult.PASS
     }

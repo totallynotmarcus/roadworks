@@ -2,6 +2,7 @@ package me.znepb.roadworks.render.attachments
 
 import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.sign.SignAttachment
+import me.znepb.roadworks.attachment.AttachmentPosition
 import me.znepb.roadworks.util.RenderUtils
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
@@ -19,6 +20,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
         return Identifier(tex.namespace, "textures/" + tex.path + ".png")
     }
 
+
     override fun render(
         attachment: SignAttachment,
         blockEntity: PostContainerBlockEntity,
@@ -30,10 +32,17 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
     ) {
         val frontTexture = getSignFrontTexture(attachment)
         val backTexture = getSignBackTexture(attachment)
+        val signHeight = attachment.getSignData()?.height ?: 64
+
+        val offsetPos = when(attachment.position) {
+            AttachmentPosition.TOP -> 0.0
+            AttachmentPosition.MIDDLE -> -0.5 + signHeight.toDouble() / 128.0
+            AttachmentPosition.BOTTOM -> -1.0 + signHeight.toDouble() / 64.0
+        }
 
         matrices.push()
         AttachmentRenderer.translateForCenter(matrices, attachment.facing)
-        matrices.translate(0.0, 0.0, attachment.container.thickness.thickness / 2)
+        matrices.translate(0.0, offsetPos, attachment.container.thickness.thickness / 2)
 
         // Render sign front
         val frontBuffer: VertexConsumer = vertexConsumers.getBuffer(RenderLayers.getRenderLayer(frontTexture))
@@ -47,7 +56,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
 
         matrices.push()
         AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
-        matrices.translate(0.0, 0.0, -attachment.container.thickness.thickness / 2)
+        matrices.translate(0.0, offsetPos, -attachment.container.thickness.thickness / 2)
 
         // Render sign back
         val backBuffer: VertexConsumer = vertexConsumers.getBuffer(RenderLayers.getRenderLayer(backTexture))

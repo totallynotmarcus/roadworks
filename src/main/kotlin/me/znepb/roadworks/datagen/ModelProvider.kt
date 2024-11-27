@@ -307,6 +307,7 @@ class ModelProvider(output: FabricDataOutput) : FabricModelProvider(output) {
 
     override fun generateItemModels(generator: ItemModelGenerator) {
         generator.register(RoadworksRegistry.ModItems.LINKER, Models.GENERATED)
+        generator.register(RoadworksRegistry.ModItems.WRENCH, Models.GENERATED)
         generator.register(RoadworksRegistry.ModItems.SIGN_EDITOR, Models.GENERATED)
         generator.register(RoadworksRegistry.ModItems.ROAD_SIGN_ATTACHMENT, Models.GENERATED)
 

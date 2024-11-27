@@ -71,9 +71,9 @@ object RenderUtils {
         ).toFloat()
     }
 
-    fun createVertex(x: Float, y: Float, u: Float, v: Float, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int, z: Float) {
+    fun createVertex(x: Float, y: Float, u: Float, v: Float, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int, z: Float, r: Int, g: Int, b: Int) {
         buffer.vertex(matrix, x, y, z)     // Position
-            .color(255, 255, 255, 255)              // Color
+            .color(r, g, b, 255)              // Color
             .texture(u, v)                    // Texture coordinates
             .overlay(OverlayTexture.DEFAULT_UV)                       // Overlay coordinates (default 0 for no effect)
             .light(light)                           // Light coordinates
@@ -81,10 +81,15 @@ object RenderUtils {
             .next()
     }
 
+    fun createVertex(x: Float, y: Float, u: Float, v: Float, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int, z: Float) {
+        createVertex(x, y, u, v, buffer, matrix, light, overlay, z, 255, 255, 255)
+    }
+
     fun drawSquare(
         x: Float, y: Float, z: Float, u: Float, v: Float, width: Float, height: Float,
         blockWidth: Int, blockHeight: Int, regionWidth: Float, regionHeight: Float,
-        textureWidth: Int, textureHeight: Int, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int
+        textureWidth: Int, textureHeight: Int, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int,
+        r: Int, g: Int, b: Int
     ) {
         val textureWidthFloat = textureWidth.toFloat()
         val textureHeightFloat = textureHeight.toFloat()
@@ -101,10 +106,27 @@ object RenderUtils {
         val v1 = v / textureHeightFloat
         val v2 = (v / textureHeightFloat) + (regionHeight / textureWidthFloat)
 
-        createVertex(x1, y1, u1, v2, buffer, matrix, light, overlay, z)
-        createVertex(x2, y1, u2, v2, buffer, matrix, light, overlay, z)
-        createVertex(x2, y2, u2, v1, buffer, matrix, light, overlay, z)
-        createVertex(x1, y2, u1, v1, buffer, matrix, light, overlay, z)
+        createVertex(x1, y1, u1, v2, buffer, matrix, light, overlay, z, r, g, b)
+        createVertex(x2, y1, u2, v2, buffer, matrix, light, overlay, z, r, g, b)
+        createVertex(x2, y2, u2, v1, buffer, matrix, light, overlay, z, r, g, b)
+        createVertex(x1, y2, u1, v1, buffer, matrix, light, overlay, z, r, g, b)
+    }
+
+    fun drawSquare(
+        x: Float, y: Float, z: Float, u: Float, v: Float, width: Float, height: Float,
+        blockWidth: Int, blockHeight: Int, regionWidth: Float, regionHeight: Float,
+        textureWidth: Int, textureHeight: Int, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int,
+    ) {
+        drawSquare(x, y, z, u, v, width, height, blockWidth, blockHeight, regionWidth, regionHeight, textureWidth, textureHeight, buffer, matrix, light, overlay, 255, 255, 255)
+    }
+
+    fun drawSquare(
+        x: Float, y: Float, z: Float, u: Float, v: Float, width: Float, height: Float,
+        blockWidth: Int, blockHeight: Int, regionWidth: Float, regionHeight: Float,
+        textureWidth: Int, textureHeight: Int, buffer: VertexConsumer, matrix: Matrix4f, light: Int, overlay: Int,
+        color: Triple<Int, Int, Int>
+    ) {
+        drawSquare(x, y, z, u, v, width, height, blockWidth, blockHeight, regionWidth, regionHeight, textureWidth, textureHeight, buffer, matrix, light, overlay, color.first, color.second, color.third)
     }
 
     fun nineSplice(x1: Float, y1: Float, z: Float, width: Float, height: Float,

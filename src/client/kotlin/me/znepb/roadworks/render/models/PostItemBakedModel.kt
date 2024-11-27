@@ -56,7 +56,7 @@ class PostItemBakedModel(val sprite: Sprite) : BakedModel, FabricBakedModel {
     ) {}
 
     override fun emitItemQuads(stack: ItemStack, randomSupplier: Supplier<Random>?, context: RenderContext) {
-        val thicknessString = getBlockEntityNbt(stack)?.getString("thickness")
+        val thicknessString = stack.orCreateNbt.getString("thickness")
         val thickness = thicknessString?.let { PostThickness.fromName(it) }
 
         val modelIdentifier = thickness?.let { modelFromThickness(it) }

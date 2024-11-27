@@ -242,6 +242,9 @@ object RoadworksRegistry {
             return item
         }
 
+        val WRENCH = rItem("wrench", Item(itemSettings()))
+
+        val TRAFFIC_CABINET = rItem(ModBlocks.TRAFFIC_CABINET, ::BlockItem, itemSettings())
         val POST_CONTAINER = rItem("post", PostContainerItem(FabricItemSettings()))
 
         val TRAFFIC_CONE = rItem(ModBlocks.TRAFFIC_CONE, ::BlockItem, itemSettings())

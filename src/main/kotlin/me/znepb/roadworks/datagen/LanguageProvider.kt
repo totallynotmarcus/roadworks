@@ -18,6 +18,7 @@ class LanguageProvider(output: FabricDataOutput) : FabricLanguageProvider(output
         translationBuilder.add(RoadworksRegistry.ModItems.ROAD_SIGN_ATTACHMENT, "Road Sign")
         translationBuilder.add(RoadworksRegistry.ModItems.SIGN_ATTACHMENT, "Sign")
 
+        translationBuilder.add(RoadworksRegistry.ModItems.WRENCH, "Wrench")
         translationBuilder.add(RoadworksRegistry.ModItems.LINKER, "Linker")
         translationBuilder.add(RoadworksRegistry.ModItems.SIGN_EDITOR, "Sign Editor")
 
