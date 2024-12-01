@@ -60,6 +60,7 @@ data class EditSignPacket(val blockPos: BlockPos, val attachmentId: UUID, val ch
                     if(attachment !is RoadSignAttachment) return@execute
 
                     attachment.contents = signData.characters
+                    attachment.container.markDirty()
                 }
             }
         }
