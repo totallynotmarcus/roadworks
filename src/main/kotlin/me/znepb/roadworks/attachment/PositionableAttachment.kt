@@ -2,6 +2,7 @@ package me.znepb.roadworks.attachment
 
 import me.znepb.roadworks.RoadworksRegistry
 import me.znepb.roadworks.container.PostContainerBlockEntity
+import me.znepb.roadworks.util.PostThickness
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.ActionResult
@@ -12,7 +13,32 @@ abstract class PositionableAttachment(
     type: AttachmentType<*>,
     container: PostContainerBlockEntity,
 ) : Attachment(type, container) {
-    var position = AttachmentPosition.MIDDLE
+    var position = getFirstValid()
+
+    private fun getValidPositions(): List<AttachmentPosition> {
+        val positions = mutableListOf<AttachmentPosition>()
+        if(container.up != PostThickness.NONE) positions.add(AttachmentPosition.TOP)
+        if(!container.stub) positions.add(AttachmentPosition.MIDDLE)
+        if(container.down != PostThickness.NONE) positions.add(AttachmentPosition.BOTTOM)
+
+        return positions.toList()
+    }
+
+    private fun isPositionValid(position: AttachmentPosition): Boolean {
+        return getValidPositions().contains(position)
+    }
+
+    private fun getFirstValid(): AttachmentPosition {
+        return if(isPositionValid(AttachmentPosition.MIDDLE)) AttachmentPosition.MIDDLE
+        else if(isPositionValid(AttachmentPosition.BOTTOM)) AttachmentPosition.BOTTOM
+        else AttachmentPosition.TOP
+    }
+
+    private fun getNextValid(): AttachmentPosition {
+        var canidate = this.position.next()
+        while(!isPositionValid(canidate)) canidate = canidate.next()
+        return canidate
+    }
 
     override fun writeNBT(nbt: NbtCompound) {
         nbt.putString("position", position.getName())
@@ -22,10 +48,14 @@ abstract class PositionableAttachment(
     override fun readNBT(nbt: NbtCompound) {
         super.readNBT(nbt)
 
-        this.position = if(!this.container.isVertical())
-            AttachmentPosition.MIDDLE
+        this.position = if(!nbt.contains("position"))
+            getFirstValid()
         else
-            AttachmentPosition.fromName(nbt.getString("position") ?: "middle") ?: AttachmentPosition.MIDDLE
+            AttachmentPosition.fromName(nbt.getString("position") ?: getFirstValid().position) ?: getFirstValid()
+    }
+
+    override fun containerUpdate() {
+        if(!isPositionValid(this.position)) this.position = this.getFirstValid()
     }
 
     abstract fun isPositionable(): Boolean
@@ -35,8 +65,11 @@ abstract class PositionableAttachment(
         if(!this.container.isVertical()) return ActionResult.PASS
 
         if(player.isHolding(RoadworksRegistry.ModItems.WRENCH)) {
-            position = if(player.isSneaking) position.previous() else position.next()
-            return ActionResult.SUCCESS
+            val newPosition = getNextValid()
+            return if(newPosition == position) ActionResult.PASS else {
+                this.position = newPosition
+                ActionResult.SUCCESS
+            }
         }
 
         return super.onUse(player, hand, hit)

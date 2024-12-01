@@ -78,7 +78,7 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
 
         super.readNbt(nbt)
 
-        footer = nbt.getBoolean("footer")
+        footer = if(nbt.contains("footer")) nbt.getBoolean("footer") else this.footer
         thickness = PostThickness.fromName(nbt.getString("thickness"))
         up = PostThickness.fromNameNullable(nbt.getString("up")) ?: this.up
         down = PostThickness.fromNameNullable(nbt.getString("down")) ?: this.down
@@ -86,7 +86,7 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         east = PostThickness.fromNameNullable(nbt.getString("east")) ?: this.east
         south = PostThickness.fromNameNullable(nbt.getString("south")) ?: this.south
         west = PostThickness.fromNameNullable(nbt.getString("west")) ?: this.west
-        stub = if(nbt.contains("stub")) nbt.getBoolean("stub") else this.stub
+        stub = if(nbt.contains("stub")) nbt.getBoolean("stub")  && !this.footer else this.stub && !this.footer
 
         if(thickness == PostThickness.NONE) {
             thickness = PostThickness.MEDIUM
@@ -249,9 +249,10 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
             south = this.getConnectionThickness(pos.south(), stateSouth, Direction.SOUTH)
             east = this.getConnectionThickness(pos.east(), stateEast, Direction.EAST)
             west = this.getConnectionThickness(pos.west(), stateWest, Direction.WEST)
-            stub = stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE
+            stub = stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE && down != PostThickness.NONE && !footer
 
             this.markDirty()
+            this.sendAttachmentUpdate()
         }
     }
 
@@ -313,9 +314,9 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
 
     fun onUse(player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
         if(player.isHolding(RoadworksRegistry.ModItems.WRENCH)) {
-            stub = !stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE
-            val result = if(up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE) ActionResult.SUCCESS else ActionResult.PASS
-            if(result == ActionResult.PASS) this.sendAttachmentUpdate()
+            stub = !stub && (up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE && down != PostThickness.NONE && !footer)
+            val result = if(up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE && down != PostThickness.NONE && !footer) ActionResult.SUCCESS else ActionResult.PASS
+            if(result == ActionResult.SUCCESS) this.sendAttachmentUpdate()
             return result
         }
 
