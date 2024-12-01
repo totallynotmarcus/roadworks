@@ -100,18 +100,6 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify)
     }
 
-    override fun getStateForNeighborUpdate(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: WorldAccess,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState? {
-        blockEntity(world, pos)?.getConnections(world)
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos)
-    }
-
     override fun getPickStack(world: BlockView, pos: BlockPos, state: BlockState): ItemStack {
         val be = world.getBlockEntity(pos)
         if(be == null || be !is PostContainerBlockEntity) return ItemStack.EMPTY
@@ -231,7 +219,9 @@ class PostContainer(settings: Settings) : BlockWithEntity(settings), BlockEntity
     ) {
         super.onPlaced(world, pos, state, placer, itemStack)
 
+        blockEntity(world, pos)?.getConnections(world)
         blockEntity(world, pos)?.thickness = PostContainerItem.getThickness(itemStack)
+        world.updateNeighbors(pos, state.block)
     }
 
     override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {

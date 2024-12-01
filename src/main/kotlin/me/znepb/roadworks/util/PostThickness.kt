@@ -24,5 +24,15 @@ enum class PostThickness(val id: Int, name: String, val thickness: Double) {
                 else -> NONE
             }
         }
+
+        fun fromNameNullable(name: String): PostThickness? {
+            return when(name.lowercase()) {
+                "thin" -> THIN
+                "medium" -> MEDIUM
+                "thick" -> THICK
+                "none" -> NONE
+                else -> null
+            }
+        }
     }
 }

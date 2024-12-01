@@ -80,13 +80,13 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
 
         footer = nbt.getBoolean("footer")
         thickness = PostThickness.fromName(nbt.getString("thickness"))
-        up = PostThickness.fromName(nbt.getString("up"))
-        down = PostThickness.fromName(nbt.getString("down"))
-        north = PostThickness.fromName(nbt.getString("north"))
-        east = PostThickness.fromName(nbt.getString("east"))
-        south = PostThickness.fromName(nbt.getString("south"))
-        west = PostThickness.fromName(nbt.getString("west"))
-        stub = nbt.getBoolean("stub") || false
+        up = PostThickness.fromNameNullable(nbt.getString("up")) ?: this.up
+        down = PostThickness.fromNameNullable(nbt.getString("down")) ?: this.down
+        north = PostThickness.fromNameNullable(nbt.getString("north")) ?: this.north
+        east = PostThickness.fromNameNullable(nbt.getString("east")) ?: this.east
+        south = PostThickness.fromNameNullable(nbt.getString("south")) ?: this.south
+        west = PostThickness.fromNameNullable(nbt.getString("west")) ?: this.west
+        stub = if(nbt.contains("stub")) nbt.getBoolean("stub") else this.stub
 
         if(thickness == PostThickness.NONE) {
             thickness = PostThickness.MEDIUM
@@ -129,13 +129,6 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
             }
         }
 
-        if(!doneInitialUpdate) {
-            if(this.canCheckConnections(this.world)) {
-                this.getConnections(this.world!!)
-                doneInitialUpdate = true
-            }
-        }
-
         this.attachments = attachments
         this.getWorld()?.getBlockState(this.getPos())?.updateNeighbors(this.world, this.pos, Block.NOTIFY_NEIGHBORS, 2)
     }
@@ -151,7 +144,6 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         attachments.add(attachment)
         this.attachments = attachments.toList()
         this.markDirty()
-        getConnections(this.world!!)
     }
 
     fun removeAttachment(uuid: UUID) {
@@ -167,7 +159,6 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
 
         this.attachments = newAttachments.toList()
         this.markDirty()
-        getConnections(this.world!!)
     }
 
     fun getAttachment(uuid: UUID): Attachment? {
