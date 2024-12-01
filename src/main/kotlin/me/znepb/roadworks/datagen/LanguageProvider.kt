@@ -16,6 +16,7 @@ class LanguageProvider(output: FabricDataOutput) : FabricLanguageProvider(output
         translationBuilder.add(RoadworksRegistry.ModBlocks.BOLLARD_THICK, "Thick Bollard")
 
         translationBuilder.add(RoadworksRegistry.ModItems.ROAD_SIGN_ATTACHMENT, "Road Sign")
+        translationBuilder.add(RoadworksRegistry.ModItems.ROAD_SIGN_WARNING_ATTACHMENT, "Warning Road Sign")
         translationBuilder.add(RoadworksRegistry.ModItems.SIGN_ATTACHMENT, "Sign")
 
         translationBuilder.add(RoadworksRegistry.ModItems.WRENCH, "Wrench")
@@ -151,9 +152,7 @@ class LanguageProvider(output: FabricDataOutput) : FabricLanguageProvider(output
         translationBuilder.add("sign.${NAMESPACE}.3_way_intersection", "3-Way Intersection Sign Right")
         translationBuilder.add("sign.${NAMESPACE}.3_way_intersection_alt", "3-Way Intersection Sign Left")
         translationBuilder.add("sign.${NAMESPACE}.3_way_intersection_t", "3-Way Intersection Sign T")
-        translationBuilder.add("sign.${NAMESPACE}.4_way", "4-Way Stop Sign Add-on")
         translationBuilder.add("sign.${NAMESPACE}.4_way_intersection", "4-Way Intersection Sign")
-        translationBuilder.add("sign.${NAMESPACE}.ahead", "Ahead Sign")
         translationBuilder.add("sign.${NAMESPACE}.chevron_left", "Chevron Left Sign")
         translationBuilder.add("sign.${NAMESPACE}.chevron_right", "Chevron Right Sign")
         translationBuilder.add("sign.${NAMESPACE}.do_not_enter", "Do Not Enter Sign")
@@ -185,6 +184,10 @@ class LanguageProvider(output: FabricDataOutput) : FabricLanguageProvider(output
         translationBuilder.add("sign.${NAMESPACE}.straight_left", "Straight Left Sign")
         translationBuilder.add("sign.${NAMESPACE}.straight_only", "Straight Only Sign")
         translationBuilder.add("sign.${NAMESPACE}.straight_right", "Straight Right Sign")
+        translationBuilder.add("sign.${NAMESPACE}.supplemental_ahead", "Supplemental Ahead Sign")
+        translationBuilder.add("sign.${NAMESPACE}.supplemental_all_way", "Supplemental All-Way Sign")
+        translationBuilder.add("sign.${NAMESPACE}.supplemental_diag_black_arrow_left", "Supplemental Diagonal Arrow Sign (Left)")
+        translationBuilder.add("sign.${NAMESPACE}.supplemental_diag_black_arrow_right", "Supplemental Diagonal Arrow Sign (Right)")
         translationBuilder.add("sign.${NAMESPACE}.yield", "Yield Sign")
         translationBuilder.add("sign.${NAMESPACE}.yield_ahead", "Yield Ahead Sign")
         translationBuilder.add("sign.${NAMESPACE}.wrong_way", "Wrong Way Sign")

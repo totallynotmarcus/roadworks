@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction
 open class AttachmentItem(var settings: Settings, val attachment: AttachmentType<out Attachment>) : Item(settings) {
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
         context.world.playSoundAtBlockCenter(context.blockPos, SoundEvent.of(Identifier("block.stone.place")), SoundCategory.BLOCKS, 1.0F, 0.75F, true)
-        if(context.world.isClient) return ActionResult.PASS
+
         val be = context.world.getBlockEntity(context.blockPos)
         if(be !is PostContainerBlockEntity) return ActionResult.FAIL
 
@@ -24,9 +24,12 @@ open class AttachmentItem(var settings: Settings, val attachment: AttachmentType
         if(be.getAttachmentsOnFace(context.side.rotateYCounterclockwise()).isNotEmpty()) return ActionResult.FAIL
         if(be.getDirectionThickness(context.side) != PostThickness.NONE) return ActionResult.FAIL
 
+        if(context.world.isClient) return ActionResult.PASS
+
+        // do all actual handing on the server
+
         val attachment = attachment.factory.create(be)
-        val nbt = getBlockEntityNbt(context.stack)
-        nbt?.let { attachment.readNBT(it) }
+        attachment.readNBT(context.stack.orCreateNbt)
         be.addAttachment(attachment, context.side)
         return ActionResult.SUCCESS
     }

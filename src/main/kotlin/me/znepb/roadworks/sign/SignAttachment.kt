@@ -21,6 +21,11 @@ class SignAttachment(
 ) : PositionableAttachment(SIGN_ATTACHMENT, container) {
     var signType = ModId("unknown")
 
+    val signFixes = mutableMapOf<Identifier, Identifier>().also {
+        it[ModId("4_way")] = ModId("supplemental_all_way")
+        it[ModId("ahead")] = ModId("supplemental_ahead")
+    }
+
     companion object {
         val SIGN_SHAPE_WALL = BlockWithEntity.createCuboidShape(0.0, 0.0, 7.75, 16.0, 16.0, 8.25)
     }
@@ -34,7 +39,12 @@ class SignAttachment(
         if(newSignType == null) {
             logger.warn("Invalid sign identifier: {}", nbt.getString(("sign_type")))
         } else {
-            signType = newSignType
+            signType = if(signFixes.contains(newSignType)) {
+                logger.info("Fixed sign type $newSignType to ${signFixes[newSignType]!!}")
+                signFixes[newSignType]!!
+            } else {
+                newSignType
+            }
         }
     }
 

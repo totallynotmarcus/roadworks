@@ -165,6 +165,10 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
         return attachments.find { it.id == uuid }
     }
 
+    private fun sendAttachmentUpdate() {
+        this.attachments.forEach { it.containerUpdate() }
+    }
+
     fun getPlayerAttachmentLookingAt(player: PlayerEntity): Attachment? {
         val eyePos = player.getCameraPosVec(1.0F)
         val lookDirection = player.getRotationVec(1.0F)
@@ -310,7 +314,9 @@ open class PostContainerBlockEntity(pos: BlockPos, state: BlockState) : BlockEnt
     fun onUse(player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
         if(player.isHolding(RoadworksRegistry.ModItems.WRENCH)) {
             stub = !stub && up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE
-            return if(up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE) ActionResult.SUCCESS else ActionResult.PASS
+            val result = if(up == PostThickness.NONE && north == PostThickness.NONE && south == PostThickness.NONE && east == PostThickness.NONE && west == PostThickness.NONE) ActionResult.SUCCESS else ActionResult.PASS
+            if(result == ActionResult.PASS) this.sendAttachmentUpdate()
+            return result
         }
 
         return ActionResult.PASS

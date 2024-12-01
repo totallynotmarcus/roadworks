@@ -39,7 +39,7 @@ class SignItemBakedModel(val sprite: Sprite) : BakedModel, FabricBakedModel {
     ) {}
 
     override fun emitItemQuads(stack: ItemStack, randomSupplier: Supplier<Random>?, context: RenderContext) {
-        val type = getBlockEntityNbt(stack)?.getString("sign_type")
+        val type = stack.orCreateNbt.getString("sign_type")
 
         if(type != null && RoadworksMain.signageManager.getSign(Identifier(type)) != null) {
             val signType = RoadworksMain.signageManager.getSign(Identifier(type))!!

@@ -40,9 +40,7 @@ object RoadworksClient : ClientModInitializer {
 		ItemGroupEvents.modifyEntriesEvent(RoadworksRegistry.itemGroup).register {
 			RoadworksMain.signageManager.getSignTypes().forEach { sign ->
 				val item = ItemStack(RoadworksRegistry.ModItems.SIGN_ATTACHMENT)
-				val nbt = NbtCompound()
-				nbt.putString("sign_type", sign.key.toString())
-				BlockItem.setBlockEntityNbt(item, RoadworksRegistry.ModBlockEntities.CONTAINER_BLOCK_ENTITY, nbt)
+				item.orCreateNbt.putString("sign_type", sign.key.toString())
 				it.add(item)
 			}
 
@@ -50,6 +48,10 @@ object RoadworksClient : ClientModInitializer {
 			for(i in 1 .. 3) {
 				it.add(createItemStackForThickness(PostThickness.fromId(i)))
 			}
+
+			val roadSignAttachmentItem = ItemStack(RoadworksRegistry.ModItems.ROAD_SIGN_WARNING_ATTACHMENT)
+			roadSignAttachmentItem.orCreateNbt.putString("color", "yellow")
+			it.addAfter(RoadworksRegistry.ModItems.SIGN_ATTACHMENT, roadSignAttachmentItem)
 		}
 
 		ClientPlayNetworking.registerGlobalReceiver(SignEditorScreenHandler.SyncData.PACKET_ID) { client, handler, buf, response ->

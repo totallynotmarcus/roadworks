@@ -1,0 +1,6 @@
+{
+  "name": "sign.roadworks.4_way",
+  "front_texture": "roadworks:block/signs/supplemental_all_way",
+  "back_texture": "roadworks:block/signs/back_supplemental",
+  "height": 23
+}

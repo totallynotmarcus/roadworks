@@ -1,0 +1,6 @@
+{
+  "name": "sign.roadworks.ahead",
+  "front_texture": "roadworks:block/signs/supplemental_ahead",
+  "back_texture": "roadworks:block/signs/back_supplemental",
+  "height": 23
+}

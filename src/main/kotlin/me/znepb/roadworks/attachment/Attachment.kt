@@ -57,5 +57,7 @@ abstract class Attachment(
 
     open fun onTick() {}
 
+    open fun containerUpdate() {}
+
     open fun onUse(player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult = ActionResult.PASS
 }

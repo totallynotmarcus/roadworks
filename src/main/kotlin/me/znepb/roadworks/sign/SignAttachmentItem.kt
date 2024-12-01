@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier
 
 class SignAttachmentItem(settings: Settings, attachment: AttachmentType<out Attachment>) : AttachmentItem(settings, attachment) {
     override fun getName(stack: ItemStack): Text {
-        val nbt = getBlockEntityNbt(stack)
+        val nbt = stack.orCreateNbt
         val signType = if(nbt?.contains("sign_type") == true) RoadworksMain.signageManager.getSign(Identifier(nbt.getString("sign_type"))) else null
         return Text.translatable(signType?.name ?: "block.roadworks.sign")
     }

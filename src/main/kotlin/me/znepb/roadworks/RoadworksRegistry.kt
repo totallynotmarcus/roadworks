@@ -51,6 +51,7 @@ import net.minecraft.util.Identifier
 object RoadworksRegistry {
     val itemGroup = RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier(RoadworksMain.NAMESPACE))
     private val items = mutableListOf<Item>()
+    private val creativeInventoryItems = mutableListOf<Item>()
 
     internal fun init() {
         listOf(ModBlockEntities, ModBlocks, ModItems, ModScreens)
@@ -60,7 +61,7 @@ object RoadworksRegistry {
                 .displayName(Text.translatable("itemGroup.${RoadworksMain.NAMESPACE}.main"))
                 .icon{ ItemStack(ModItems.TRAFFIC_CONE) }
                 .entries { _, entries ->
-                    items.filter { it !is SignAttachmentItem && it !is PostContainerItem } .forEach { entries.add(it) }
+                    creativeInventoryItems.forEach { entries.add(it) }
                 }
                 .build()
         )
@@ -230,21 +231,36 @@ object RoadworksRegistry {
 
     object ModItems {
         private fun itemSettings(): FabricItemSettings = FabricItemSettings()
-        fun<T: Item> rItem(name: String, value: T): T =
-            Registry.register(ITEM, ModId(name), value).also { items.add(it) }
+
+        private fun<T: Item> rItem(name: String, value: T): T =
+            rItem(name, value, true)
+
+        private fun<T: Item> rItem(name: String, value: T, addToCreative: Boolean): T =
+            Registry.register(ITEM, ModId(name), value).also {
+                items.add(it)
+                if(addToCreative) creativeInventoryItems.add(it)
+            }
+
         private fun<B: Block, I: Item> rItem(parent:B, supplier: (B, Item.Settings) -> I, settings: Item.Settings =
-                itemSettings()): I
+                itemSettings(), addToCreative: Boolean): I
         {
             val item = Registry.register(ITEM, BLOCK.getId(parent), supplier(parent, settings))
             Item.BLOCK_ITEMS[parent] = item
             items.add(item)
+            if(addToCreative) creativeInventoryItems.add(item)
             return item
+        }
+
+        private fun<B: Block, I: Item> rItem(parent:B, supplier: (B, Item.Settings) -> I, settings: Item.Settings =
+            itemSettings()): I
+        {
+            return rItem(parent, supplier, settings, true)
         }
 
         val WRENCH = rItem("wrench", Item(itemSettings()))
 
         val TRAFFIC_CABINET = rItem(ModBlocks.TRAFFIC_CABINET, ::BlockItem, itemSettings())
-        val POST_CONTAINER = rItem("post", PostContainerItem(FabricItemSettings()))
+        val POST_CONTAINER = rItem("post", PostContainerItem(FabricItemSettings()), false)
 
         val TRAFFIC_CONE = rItem(ModBlocks.TRAFFIC_CONE, ::BlockItem, itemSettings())
         val CHANNELER = rItem(ModBlocks.CHANNELER, ::BlockItem, itemSettings())
@@ -360,10 +376,10 @@ object RoadworksRegistry {
         val LINKER = rItem("linker", Linker(FabricItemSettings()))
         val SIGN_EDITOR = rItem("sign_editor", SignEditor(FabricItemSettings()))
 
-        //val POST_CONTAINER = rItem()
 
-        val SIGN_ATTACHMENT = rItem("sign", SignAttachmentItem(FabricItemSettings(), ModAttachments.SIGN_ATTACHMENT))
+        val SIGN_ATTACHMENT = rItem("sign", SignAttachmentItem(FabricItemSettings(), ModAttachments.SIGN_ATTACHMENT), false)
         val ROAD_SIGN_ATTACHMENT = rItem("road_sign", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT))
+        val ROAD_SIGN_WARNING_ATTACHMENT = rItem("road_sign_warning", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT), false)
         val PEDESTRIAN_SIGNAL_ATTACHMENT = rItem("pedestrian_signal", AttachmentItem(FabricItemSettings(), ModAttachments.PEDESTRIAN_SIGNAL))
         val BEACON_ATTACHMENT_RED = rItem("beacon_red", AttachmentItem(FabricItemSettings(), ModAttachments.BEACON_RED))
         val BEACON_ATTACHMENT_YELLOW = rItem("beacon_yellow", AttachmentItem(FabricItemSettings(), ModAttachments.BEACON_YELLOW))

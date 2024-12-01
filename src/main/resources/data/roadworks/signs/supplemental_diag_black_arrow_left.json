@@ -1,0 +1,6 @@
+{
+  "name": "sign.roadworks.supplemental_diag_black_arrow_left",
+  "front_texture": "roadworks:block/signs/supplemental_diag_black_arrow_left",
+  "back_texture": "roadworks:block/signs/back_supplemental",
+  "height": 23
+}
