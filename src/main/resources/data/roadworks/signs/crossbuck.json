@@ -1,0 +1,6 @@
+{
+  "name": "sign.roadworks.crossbuck",
+  "front_texture": "roadworks:block/signs/crossbuck",
+  "back_texture": "roadworks:block/signs/back_crossbuck",
+  "rotation": 45
+}
