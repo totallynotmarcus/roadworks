@@ -378,7 +378,7 @@ object RoadworksRegistry {
 
 
         val SIGN_ATTACHMENT = rItem("sign", SignAttachmentItem(FabricItemSettings(), ModAttachments.SIGN_ATTACHMENT), false)
-        val ROAD_SIGN_ATTACHMENT = rItem("road_sign", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT))
+        val ROAD_SIGN_ATTACHMENT = rItem("road_sign", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT), false)
         val ROAD_SIGN_WARNING_ATTACHMENT = rItem("road_sign_warning", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT), false)
         val PEDESTRIAN_SIGNAL_ATTACHMENT = rItem("pedestrian_signal", AttachmentItem(FabricItemSettings(), ModAttachments.PEDESTRIAN_SIGNAL))
         val BEACON_ATTACHMENT_RED = rItem("beacon_red", AttachmentItem(FabricItemSettings(), ModAttachments.BEACON_RED))
