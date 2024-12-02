@@ -44,7 +44,7 @@ abstract class AbstractSignalAttachment(
 
     override fun readNBT(nbt: NbtCompound) {
         signalType.lights.forEach {
-            signalState[it] = nbt.getBoolean(it.light)
+            signalState[it] = if(nbt.contains(it.light)) nbt.getBoolean(it.light) else false
         }
 
         super.readNBT(nbt)

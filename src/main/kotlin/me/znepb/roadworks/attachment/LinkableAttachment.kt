@@ -52,8 +52,8 @@ abstract class LinkableAttachment(type: AttachmentType<*>, container: PostContai
 
     override fun readNBT(nbt: NbtCompound) {
         super.readNBT(nbt)
-        linked = nbt.getBoolean("linked")
-        linkPosition = blockPosFromNbtIntArray(nbt.getIntArray("linkPosition"))
+        linked = if(nbt.contains("linked")) nbt.getBoolean("linked") else false
+        linkPosition = if(nbt.contains("linkPosition") )blockPosFromNbtIntArray(nbt.getIntArray("linkPosition")) else BlockPos.ORIGIN
     }
 
     override fun writeNBT(nbt: NbtCompound) {
