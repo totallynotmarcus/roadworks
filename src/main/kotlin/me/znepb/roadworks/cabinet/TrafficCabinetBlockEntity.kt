@@ -7,6 +7,7 @@ import me.znepb.roadworks.container.PostContainerBlockEntity
 import me.znepb.roadworks.signal.AbstractSignalAttachment
 import me.znepb.roadworks.signal.SignalLight
 import me.znepb.roadworks.signal.SignalType
+import me.znepb.roadworks.train.TrainBellAttachment
 import me.znepb.roadworks.util.MiscUtils.blockPosFromNbtIntArray
 import me.znepb.roadworks.util.MiscUtils.blockPosToNbtIntArray
 import net.minecraft.block.BlockState
@@ -17,6 +18,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import java.util.*
+import kotlin.collections.HashMap
 
 class TrafficCabinetBlockEntity(
     pos: BlockPos,
@@ -24,8 +26,11 @@ class TrafficCabinetBlockEntity(
 ) : BlockEntity(RoadworksRegistry.ModBlockEntities.CABINET_BLOCK_ENTITY, pos, state) {
     val peripheral = TrafficCabinetPeripheral(this)
     private var connections = Connections()
+
     private val idTypeCache = HashMap<Int, String>()
+
     private var signalSetQueue = HashMap<Int, HashMap<SignalLight, Boolean>>()
+    private var bellActivationQueue = HashMap<Int, Boolean>()
 
     fun getTotalDevices() = connections.getAmount()
     fun getConnections() = connections
@@ -43,12 +48,14 @@ class TrafficCabinetBlockEntity(
             val attachment = blockEntity.getAttachment(uuid)
             if(attachment is AbstractSignalAttachment) {
                 return addSignal(attachment)
+            } else if(attachment is TrainBellAttachment) {
+                return addTrainBell(attachment)
             }
         }
         return null
     }
 
-    fun addSignal(attachment: AbstractSignalAttachment): Int {
+    private fun addSignal(attachment: AbstractSignalAttachment): Int {
         val newSignal = connections.add(attachment.container.pos, attachment.id)
         attachment.signalType.lights.forEach {
             attachment.setSignalActive(it, it.genericType == SignalLight.RED || it.isGeneric && it == SignalLight.RED)
@@ -56,6 +63,13 @@ class TrafficCabinetBlockEntity(
         idTypeCache[newSignal.getId()] = attachment.getLinkType()
         this.markDirty()
         return newSignal.getId()
+    }
+
+    private fun addTrainBell(attachment: TrainBellAttachment): Int {
+        val newBell = connections.add(attachment.container.pos, attachment.id)
+        idTypeCache[newBell.getId()] = attachment.getLinkType()
+        this.markDirty()
+        return newBell.getId()
     }
 
     fun addButton(pos: BlockPos, uuid: UUID): Int? {
@@ -76,7 +90,7 @@ class TrafficCabinetBlockEntity(
         getConnectionIdentifierFromBlockPosAndUUID(pos, uuid)?.let { removeConnection(it) }
     }
 
-    fun removeConnection(identifier: Int) {
+    private fun removeConnection(identifier: Int) {
         val connection = connections.get(identifier) ?: return
         val attachment = this.world?.let { connection.getAttachment(it) }
         if(attachment is LinkableAttachment) attachment.unlink()
@@ -110,6 +124,10 @@ class TrafficCabinetBlockEntity(
         idQueue[signalLight] = value
     }
 
+    fun queueTrainBellSet(id: Int, activated: Boolean) {
+        bellActivationQueue[id] = activated
+    }
+
     fun onTick(world: World, pos: BlockPos, state: BlockState) {
         if(signalSetQueue.isNotEmpty()) {
             connections.getAll().forEach {
@@ -126,6 +144,19 @@ class TrafficCabinetBlockEntity(
                             }
                         }
                     }
+                }
+            }
+        }
+
+        if(bellActivationQueue.isNotEmpty()) {
+            bellActivationQueue.forEach {
+                val id = it.key
+                val value = it.value
+                val connection = connections.get(id)
+                val attachment = this.world?.let { it1 -> connection?.getAttachment(it1) }
+
+                if(attachment is TrainBellAttachment) {
+                    attachment.setActive(value)
                 }
             }
         }

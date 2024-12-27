@@ -20,6 +20,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
         return Identifier(tex.namespace, "textures/" + tex.path + ".png")
     }
 
+    private fun getRotation(attachment: SignAttachment) = attachment.getSignData()?.rotation ?: 0
 
     override fun render(
         attachment: SignAttachment,
@@ -32,6 +33,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
     ) {
         val frontTexture = getSignFrontTexture(attachment)
         val backTexture = getSignBackTexture(attachment)
+        val rotation = getRotation(attachment)
         val signHeight = attachment.getSignData()?.height ?: 64
 
         val offsetPos = when(attachment.position) {
@@ -41,7 +43,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
         }
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing, rotation)
         matrices.translate(0.0, offsetPos, attachment.container.thickness.thickness / 2)
 
         // Render sign front
@@ -55,7 +57,7 @@ class SignAttachmentRenderer : AttachmentRenderer<SignAttachment> {
         matrices.pop()
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite, rotation)
         matrices.translate(0.0, offsetPos, -attachment.container.thickness.thickness / 2)
 
         // Render sign back

@@ -24,6 +24,8 @@ import me.znepb.roadworks.signal.BeaconAttachment
 import me.znepb.roadworks.signal.FiveHeadSignalAttachment
 import me.znepb.roadworks.signal.PedestrianSignalAttachment
 import me.znepb.roadworks.signal.ThreeHeadSignalAttachment
+import me.znepb.roadworks.train.TrainBellAttachment
+import me.znepb.roadworks.train.TrainSignalAttachment
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
@@ -43,6 +45,7 @@ import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.resource.featuretoggle.FeatureFlags
 import net.minecraft.screen.ScreenHandlerType
+import net.minecraft.sound.SoundEvent
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
@@ -376,7 +379,6 @@ object RoadworksRegistry {
         val LINKER = rItem("linker", Linker(FabricItemSettings()))
         val SIGN_EDITOR = rItem("sign_editor", SignEditor(FabricItemSettings()))
 
-
         val SIGN_ATTACHMENT = rItem("sign", SignAttachmentItem(FabricItemSettings(), ModAttachments.SIGN_ATTACHMENT), false)
         val ROAD_SIGN_ATTACHMENT = rItem("road_sign", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT), false)
         val ROAD_SIGN_WARNING_ATTACHMENT = rItem("road_sign_warning", AttachmentItem(FabricItemSettings(), ModAttachments.ROAD_SIGN_ATTACHMENT), false)
@@ -391,6 +393,8 @@ object RoadworksRegistry {
         val FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_LEFT = rItem("five_head_traffic_signal_left", AttachmentItem(FabricItemSettings(), ModAttachments.FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_LEFT))
         val FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_RIGHT = rItem("five_head_traffic_signal_right", AttachmentItem(FabricItemSettings(), ModAttachments.FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_RIGHT))
         val FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_LEFT_RIGHT = rItem("five_head_traffic_signal_left_right", AttachmentItem(FabricItemSettings(), ModAttachments.FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_LEFT_RIGHT))
+        val TRAIN_BELL_ATTACHMENT = rItem("train_bell", AttachmentItem(FabricItemSettings(), ModAttachments.TRAIN_BELL))
+        val TRAIN_SIGNAL_ATTACHMENT = rItem("train_signal", AttachmentItem(FabricItemSettings(), ModAttachments.TRAIN_SIGNAL))
     }
 
     object ModAttachments {
@@ -421,5 +425,12 @@ object RoadworksRegistry {
             FiveHeadSignalAttachment::BallRight).build())
         val FIVE_HEAD_TRAFFIC_SIGNAL_ATTACHMENT_LEFT_RIGHT = Registry.register(REGISTRY, ModId("five_head_traffic_signal_left_right"), AttachmentType.Builder(
             FiveHeadSignalAttachment::LeftRight).build())
+
+        val TRAIN_BELL = Registry.register(REGISTRY, ModId("train_bell"), AttachmentType.Builder(::TrainBellAttachment).build())
+        val TRAIN_SIGNAL = Registry.register(REGISTRY, ModId("train_signal"), AttachmentType.Builder(::TrainSignalAttachment).build())
+    }
+
+    object ModSounds {
+        val BELL_SOUND_EVENT = SoundEvent.of(ModId("bell"))
     }
 }

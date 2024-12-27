@@ -38,7 +38,7 @@ class SignalRenderer(
             RoadworksMain.ModId("block/signal_${signalLight.light}_${if(attachment.isSignalActive(signalLight)) "on" else "off"}")
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite, 0)
         matrices.translate(x, y, -this.attachment.container.thickness.thickness / 2)
 
         val model = MinecraftClient.getInstance().bakedModelManager.getModel(modelLocation)

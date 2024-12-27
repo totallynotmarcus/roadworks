@@ -31,7 +31,12 @@ class ModelLoader {
             PedestrianSignalAttachmentRenderer.WALK,
             PostItemBakedModel.ITEM_THICK,
             PostItemBakedModel.ITEM_MEDIUM,
-            PostItemBakedModel.ITEM_THIN
+            PostItemBakedModel.ITEM_THIN,
+            TrainBellAttachmentRenderer.TRAIN_BELL,
+            TrainSignalAttachmentRenderer.BEACON_BASE,
+            TrainSignalAttachmentRenderer.BEACON_BACKBEAM,
+            TrainSignalAttachmentRenderer.BEACON_OFF,
+            TrainSignalAttachmentRenderer.BEACON_ON
         )
 
         init {

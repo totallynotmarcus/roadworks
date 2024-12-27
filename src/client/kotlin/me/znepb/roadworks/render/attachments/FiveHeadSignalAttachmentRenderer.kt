@@ -26,7 +26,7 @@ class FiveHeadSignalAttachmentRenderer : AttachmentRenderer<FiveHeadSignalAttach
         val renderer = SignalRenderer(attachment, matrices, vertexConsumers, light, overlay)
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite, 0)
         matrices.translate(0.0, 0.0, -thickness / 2)
         RenderUtils.renderModel(matrices, renderer.buffer, light, overlay, SIGNAL_FRAME_5, null)
         matrices.pop()

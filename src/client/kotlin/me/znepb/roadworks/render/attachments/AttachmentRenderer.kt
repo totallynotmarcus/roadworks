@@ -18,9 +18,9 @@ interface AttachmentRenderer<T : Attachment> {
     )
 
     companion object {
-        fun translateForCenter(matrices: MatrixStack, facing: Direction) {
+        fun translateForCenter(matrices: MatrixStack, facing: Direction, faceRotation: Int) {
             matrices.translate(0.5F, 0.5F, 0.5F)
-            matrices.multiply(facing.rotationQuaternion.rotateXYZ((Math.PI / 2).toFloat(), Math.PI.toFloat(), Math.PI.toFloat()))
+            matrices.multiply(facing.rotationQuaternion.rotateXYZ((Math.PI / 2).toFloat(), Math.PI.toFloat(), Math.PI.toFloat() + Math.toRadians(faceRotation.toDouble()).toFloat()))
             matrices.translate(-0.5F, -0.5F, -0.5F)
         }
     }

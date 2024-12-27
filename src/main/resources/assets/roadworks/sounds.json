@@ -1,0 +1,8 @@
+{
+  "bell": {
+    "subtitle": "subtitles.roadworks.bell",
+    "sounds": [
+      "roadworks:bell"
+    ]
+  }
+}

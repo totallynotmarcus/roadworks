@@ -37,7 +37,7 @@ class PedestrianSignalAttachmentRenderer : AttachmentRenderer<PedestrianSignalAt
         else BLANK_SIGNAL
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite, 0)
         matrices.translate(0.0, 0.0, thickness)
         RenderUtils.renderModel(matrices, renderer.buffer, light, overlay, signal, null)
         matrices.pop()

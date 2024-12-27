@@ -32,7 +32,7 @@ class BeaconAttachmentRenderer : AttachmentRenderer<BeaconAttachment> {
         }
 
         matrices.push()
-        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite)
+        AttachmentRenderer.translateForCenter(matrices, attachment.facing.opposite, 0)
         matrices.translate(0.0, offsetHeight, -thickness / 2)
         RenderUtils.renderModel(matrices, renderer.buffer, light, overlay, SIGNAL_FRAME_1, null)
         matrices.pop()

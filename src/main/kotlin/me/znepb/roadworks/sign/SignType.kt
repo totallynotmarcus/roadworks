@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.util.Identifier
 import java.util.stream.Stream
 
-data class SignType(val name: String, val frontTexture: Identifier, val backTexture: Identifier, val height: Int?) {
+data class SignType(val name: String, val frontTexture: Identifier, val backTexture: Identifier, val height: Int?, val rotation: Int?) {
     companion object {
         // IntelIJ says this <SignType> generic is redundant - Kotlin WILL NOT BUILD without it as of 10/14/2024.
         // Unless this gets resolved in the future, do not remove, either anyone or future me!
@@ -15,7 +15,8 @@ data class SignType(val name: String, val frontTexture: Identifier, val backText
                 Codec.STRING.fieldOf("name").forGetter(SignType::name),
                 Identifier.CODEC.fieldOf("back_texture").forGetter(SignType::backTexture),
                 Identifier.CODEC.fieldOf("front_texture").forGetter(SignType::frontTexture),
-                Codec.INT.optionalFieldOf("height", 64).forGetter(SignType::height)
+                Codec.INT.optionalFieldOf("height", 64).forGetter(SignType::height),
+                Codec.INT.optionalFieldOf("rotation", 0).forGetter(SignType::rotation)
         ).apply(it, ::SignType) }
 
         val CODEC: Codec<SignType> = MapCodecCodec(object : MapCodec<SignType>() {

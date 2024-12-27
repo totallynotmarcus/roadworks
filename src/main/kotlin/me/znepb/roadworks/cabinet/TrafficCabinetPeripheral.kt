@@ -7,6 +7,7 @@ import dan200.computercraft.api.peripheral.IComputerAccess
 import dan200.computercraft.api.peripheral.IPeripheral
 import me.znepb.roadworks.signal.SignalLight
 import me.znepb.roadworks.signal.SignalType
+import me.znepb.roadworks.train.TrainBellAttachment
 
 class TrafficCabinetPeripheral(val blockEntity: TrafficCabinetBlockEntity) : IPeripheral {
     override fun getType() = "traffic_cabinet"
@@ -181,6 +182,25 @@ class TrafficCabinetPeripheral(val blockEntity: TrafficCabinetBlockEntity) : IPe
         }
     }
 
+    @LuaFunction
+    fun activate(id: Int): Boolean {
+        return setActive(id, true)
+    }
+
+    @LuaFunction
+    fun deactivate(id: Int): Boolean {
+        return setActive(id, false)
+    }
+
+    @LuaFunction
+    fun setActive(id: Int, active: Boolean): Boolean {
+        return if(blockEntity.getTypeOfId(id) == "train_bell") {
+            blockEntity.queueTrainBellSet(id, active)
+            true
+        } else {
+            throw LuaException("invalid signal type")
+        }
+    }
 
     override fun equals(other: IPeripheral?): Boolean {
         return other is TrafficCabinetPeripheral
